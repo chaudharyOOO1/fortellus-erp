@@ -9,6 +9,8 @@ import Employees from './pages/Employees';
 import Personnel from './pages/Personnel';
 import Clients from './pages/Clients';
 import Sites from './pages/Sites';
+import Rosters from './pages/Rosters';
+import Attendance from './pages/Attendance';
 import ControlCenter from './pages/ControlCenter';
 import ClientsView from './pages/ClientsView';
 import SitesView from './pages/SitesView';
@@ -29,8 +31,8 @@ function App() {
     <Route path="/personnel" element={<Protected><Personnel /></Protected>} />
     <Route path="/clients" element={<Protected><Clients /></Protected>} />
     <Route path="/sites" element={<Protected><Sites /></Protected>} />
-    <Route path="/rosters" element={<Protected><RosterView /></Protected>} />
-    <Route path="/attendance" element={<Protected><AttendanceView /></Protected>} />
+    <Route path="/rosters" element={<Protected><Rosters /></Protected>} />
+    <Route path="/attendance" element={<Protected><Attendance /></Protected>} />
     <Route path="/billing" element={<Protected><InvoicesView /></Protected>} />
     <Route path="/payroll" element={<Protected><ControlCenter type="payroll" /></Protected>} />
     <Route path="/accounts" element={<Protected><ControlCenter type="accounts" /></Protected>} />

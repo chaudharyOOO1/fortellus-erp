@@ -16,7 +16,11 @@ import {
   ChevronDown,
   Menu,
   X,
-  Radio
+  Radio,
+  WalletCards,
+  Landmark,
+  FileCheck2,
+  AlertTriangle
 } from 'lucide-react';
 
 export default function MainLayout({ children, onQuickAction = null }) {
@@ -51,6 +55,10 @@ export default function MainLayout({ children, onQuickAction = null }) {
     { icon: Calendar, label: 'Rosters', path: '/rosters' },
     { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance' },
     { icon: ReceiptText, label: 'Accounts & Billing', path: '/billing' },
+    { icon: WalletCards, label: 'Payroll', path: '/payroll' },
+    { icon: Landmark, label: 'Accounts & GST', path: '/accounts' },
+    { icon: FileCheck2, label: 'Compliance', path: '/compliance' },
+    { icon: AlertTriangle, label: 'Risk Controls', path: '/risks' },
   ];
 
   let navItems = fullNavItems;

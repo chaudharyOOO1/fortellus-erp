@@ -16,7 +16,7 @@ def erp_summary(db: Session = Depends(get_db), current_user=Depends(require_admi
         return db.execute(text(sql)).scalar_one()
     return {
         "employees": scalar("select count(*) from employees"),
-        "active_employees": scalar("select count(*) from employees where status = 'ACTIVE'"),
+        "active_employees": scalar("select count(*) from employees where lower(status) = 'active'"),
         "clients": scalar("select count(*) from clients"),
         "active_sites": scalar("select count(*) from sites where is_active = true"),
         "salary_records": scalar("select count(*) from salary_records"),
@@ -24,6 +24,14 @@ def erp_summary(db: Session = Depends(get_db), current_user=Depends(require_admi
         "open_salary_holds": scalar("select count(*) from salary_holds where status = 'HELD'"),
         "open_risks": scalar("select count(*) from risk_flags where resolved = false"),
         "unpaid_invoices": scalar("select count(*) from invoices where clearance_status <> 'PAID'"),
+        "rosters": scalar("select count(*) from shift_rosters"),
+        "attendance": scalar("select count(*) from attendance"),
+        "pending_attendance_verification": scalar("select count(*) from attendance where verification_status not in ('VERIFIED','APPROVED')"),
+        "employee_documents": scalar("select count(*) from employee_documents"),
+        "expiring_documents_60d": scalar("select count(*) from employee_documents where expiry_date is not null and expiry_date between current_date and current_date + 60"),
+        "expenses": scalar("select count(*) from expenses"),
+        "corporate_compliances": scalar("select count(*) from corporate_compliances"),
+        "overdue_compliances": scalar("select count(*) from corporate_compliances where due_date < current_date and status not in ('FILED','COMPLETED','COMPLIANT')"),
     }
 
 @router.get("/employees")

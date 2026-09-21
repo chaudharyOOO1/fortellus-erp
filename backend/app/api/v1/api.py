@@ -9,6 +9,7 @@ from app.api.v1.endpoints import (
     rosters,
     attendances,
     invoices,
+    erp,
 )
 
 api_router = APIRouter()
@@ -22,3 +23,4 @@ api_router.include_router(guards.router, prefix="/guards", tags=["Guards"])
 api_router.include_router(rosters.router, prefix="/rosters", tags=["Shift Rosters"])
 api_router.include_router(attendances.router, prefix="/attendances", tags=["Attendance"])
 api_router.include_router(invoices.router, prefix="/invoices", tags=["Invoices"])
+api_router.include_router(erp.router, prefix="/erp", tags=["Enterprise ERP"])

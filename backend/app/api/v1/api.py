@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth,billing,users,clients,sites,guards,rosters,attendances,invoices,erp,employees,client_master,site_master,control_center
+from app.api.v1.endpoints import auth,billing,users,clients,sites,guards,rosters,attendances,invoices,erp,employees,client_master,site_master,control_center,roster_master,attendance_master
 api_router=APIRouter()
 api_router.include_router(auth.router,prefix="/auth",tags=["Authentication"])
 api_router.include_router(billing.router,prefix="/billing",tags=["Billing & Invoicing"])
@@ -15,3 +15,5 @@ api_router.include_router(employees.router,prefix="/erp/employees",tags=["Employ
 api_router.include_router(client_master.router,prefix="/erp/clients",tags=["Client Master"])
 api_router.include_router(site_master.router,prefix="/erp/sites",tags=["Site Master"])
 api_router.include_router(control_center.router,prefix="/erp",tags=["ERP Controls"])
+api_router.include_router(roster_master.router,prefix="/erp/rosters",tags=["Roster Master"])
+api_router.include_router(attendance_master.router,prefix="/erp/attendance",tags=["Attendance Master"])

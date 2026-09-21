@@ -45,7 +45,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
   const fullNavItems = [
     { icon: LayoutDashboard, label: 'ERP Command Center', path: '/erp' },
     { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
-    { icon: Shield, label: 'Employees & HR', path: '/personnel' },
+    { icon: Shield, label: 'Employees & HR', path: '/employees' },
     { icon: Users, label: 'Clients', path: '/clients' },
     { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
     { icon: Calendar, label: 'Rosters', path: '/rosters' },
@@ -59,7 +59,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
     navItems = [
       { icon: LayoutDashboard, label: 'Executive Dashboard', path: '/owner-executive' },
       { icon: LayoutDashboard, label: 'Command Center', path: '/dashboard' },
-      { icon: Shield, label: 'Staff Personnel', path: '/personnel' },
+      { icon: Shield, label: 'Staff Personnel', path: '/employees' },
       { icon: Users, label: 'Client Accounts', path: '/clients' },
       { icon: MapPin, label: 'Deployment Sites', path: '/sites' },
       { icon: Calendar, label: 'Duty Rosters', path: '/rosters' },
@@ -69,7 +69,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
   } else if (role === 'HR') {
     navItems = [
       { icon: LayoutDashboard, label: 'HR Dashboard', path: '/dashboard' },
-      { icon: Shield, label: 'Staff Personnel', path: '/personnel' },
+      { icon: Shield, label: 'Staff Personnel', path: '/employees' },
       { icon: ClipboardList, label: 'Attendance Records', path: '/attendance' },
     ];
   } else if (role === 'OPERATIONS' || role === 'SUPERVISOR') {

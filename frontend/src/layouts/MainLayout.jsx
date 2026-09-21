@@ -43,13 +43,14 @@ export default function MainLayout({ children, onQuickAction = null }) {
 
   // Full admin suite (OWNER, SUPER_ADMIN, ADMIN)
   const fullNavItems = [
-    { icon: LayoutDashboard, label: 'Command Center', path: '/dashboard' },
-    { icon: Shield, label: 'Staff Personnel', path: '/personnel' },
-    { icon: Users, label: 'Client Accounts', path: '/clients' },
-    { icon: MapPin, label: 'Deployment Sites', path: '/sites' },
-    { icon: Calendar, label: 'Duty Rosters', path: '/rosters' },
+    { icon: LayoutDashboard, label: 'ERP Command Center', path: '/erp' },
+    { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
+    { icon: Shield, label: 'Employees & HR', path: '/personnel' },
+    { icon: Users, label: 'Clients', path: '/clients' },
+    { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
+    { icon: Calendar, label: 'Rosters', path: '/rosters' },
     { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance' },
-    { icon: ReceiptText, label: 'Billing / Invoices', path: '/billing' },
+    { icon: ReceiptText, label: 'Accounts & Billing', path: '/billing' },
   ];
 
   let navItems = fullNavItems;
@@ -122,7 +123,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
           </button>
 
           <div
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/erp')}
             className="flex items-center gap-2.5 cursor-pointer group select-none"
           >
             <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(0,242,254,0.3)] transition-all">

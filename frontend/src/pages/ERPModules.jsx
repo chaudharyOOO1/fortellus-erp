@@ -9,12 +9,12 @@ import {
 } from 'lucide-react';
 
 const modules = [
-  { title: 'Employees', subtitle: 'Employee master, documents, bank, nominee & uniforms', path: '/personnel', icon: Users },
+  { title: 'Employees', subtitle: 'Employee master, documents, bank, nominee & uniforms', path: '/employees', icon: Users },
   { title: 'Clients', subtitle: 'Clients, contracts, contacts and billing configuration', path: '/clients', icon: Building2 },
   { title: 'Sites', subtitle: 'Deployment locations and manpower requirements', path: '/sites', icon: MapPin },
   { title: 'Operations', subtitle: 'Rosters, deployment and attendance control', path: '/rosters', icon: ClipboardCheck },
   { title: 'Payroll', subtitle: 'Salary records, holds and payroll processing', path: '/payroll', icon: WalletCards },
-  { title: 'Accounts & GST', subtitle: 'Invoices, expenses, GST and bookkeeping', path: '/billing', icon: ReceiptText },
+  { title: 'Accounts & GST', subtitle: 'Invoices, expenses, GST and bookkeeping', path: '/accounts', icon: ReceiptText },
   { title: 'Compliance', subtitle: 'Documents, expiry tracking and statutory controls', path: '/compliance', icon: ShieldCheck },
   { title: 'Risk & Controls', subtitle: 'Owner-level risks and exception monitoring', path: '/risks', icon: FileWarning },
 ];
@@ -37,6 +37,10 @@ export default function ERPModules() {
     ['Salary Records', summary.salary_records ?? 0, IndianRupee],
     ['Unpaid Invoices', summary.unpaid_invoices ?? 0, ReceiptText],
     ['Open Risks', summary.open_risks ?? 0, FileWarning],
+    ['Rosters', summary.rosters ?? 0, ClipboardCheck],
+    ['Attendance', summary.attendance ?? 0, ClipboardCheck],
+    ['Docs Expiring ≤60d', summary.expiring_documents_60d ?? 0, FileWarning],
+    ['Overdue Compliance', summary.overdue_compliances ?? 0, ShieldCheck],
   ];
 
   return (
@@ -50,7 +54,7 @@ export default function ERPModules() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {stats.map(([label, value, Icon]) => (
             <StatCard key={label} label={label} value={loading ? '—' : value} icon={Icon} />
           ))}

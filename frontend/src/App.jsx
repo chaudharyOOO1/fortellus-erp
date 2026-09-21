@@ -8,6 +8,7 @@ import ERPModules from './pages/ERPModules';
 import Employees from './pages/Employees';
 import Personnel from './pages/Personnel';
 import Clients from './pages/Clients';
+import Sites from './pages/Sites';
 import ClientsView from './pages/ClientsView';
 import SitesView from './pages/SitesView';
 import RosterView from './pages/RosterView';
@@ -26,7 +27,7 @@ function App() {
     <Route path="/employees" element={<Protected><Employees /></Protected>} />
     <Route path="/personnel" element={<Protected><Personnel /></Protected>} />
     <Route path="/clients" element={<Protected><Clients /></Protected>} />
-    <Route path="/sites" element={<Protected><SitesView /></Protected>} />
+    <Route path="/sites" element={<Protected><Sites /></Protected>} />
     <Route path="/rosters" element={<Protected><RosterView /></Protected>} />
     <Route path="/attendance" element={<Protected><AttendanceView /></Protected>} />
     <Route path="/billing" element={<Protected><InvoicesView /></Protected>} />

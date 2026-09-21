@@ -4,6 +4,7 @@ import { useAuth } from './context/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import ERPModules from './pages/ERPModules';
 import Personnel from './pages/Personnel';
 import ClientsView from './pages/ClientsView';
 import SitesView from './pages/SitesView';
@@ -14,7 +15,11 @@ import './App.css';
 
 function RootRedirect() {
   const { isAuthenticated } = useAuth();
-  return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
+  return <Navigate to={isAuthenticated ? '/erp' : '/login'} replace />;
+}
+
+function Protected({ children }) {
+  return <ProtectedRoute>{children}</ProtectedRoute>;
 }
 
 function App() {
@@ -23,74 +28,15 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/personnel"
-            element={
-              <ProtectedRoute>
-                <Personnel />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/clients"
-            element={
-              <ProtectedRoute>
-                <ClientsView />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/sites"
-            element={
-              <ProtectedRoute>
-                <SitesView />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/rosters"
-            element={
-              <ProtectedRoute>
-                <RosterView />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/attendance"
-            element={
-              <ProtectedRoute>
-                <AttendanceView />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/billing"
-            element={
-              <ProtectedRoute>
-                <InvoicesView />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Redirect root: dashboard if authenticated, login if not */}
+          <Route path="/erp" element={<Protected><ERPModules /></Protected>} />
+          <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
+          <Route path="/personnel" element={<Protected><Personnel /></Protected>} />
+          <Route path="/clients" element={<Protected><ClientsView /></Protected>} />
+          <Route path="/sites" element={<Protected><SitesView /></Protected>} />
+          <Route path="/rosters" element={<Protected><RosterView /></Protected>} />
+          <Route path="/attendance" element={<Protected><AttendanceView /></Protected>} />
+          <Route path="/billing" element={<Protected><InvoicesView /></Protected>} />
           <Route path="/" element={<RootRedirect />} />
-
-          {/* Catch all redirect */}
           <Route path="*" element={<RootRedirect />} />
         </Routes>
       </AuthProvider>

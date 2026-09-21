@@ -19,9 +19,10 @@ def erp_summary(db: Session = Depends(get_db), current_user=Depends(require_admi
         "active_employees": scalar("select count(*) from employees where status = 'ACTIVE'"),
         "clients": scalar("select count(*) from clients"),
         "active_sites": scalar("select count(*) from sites where is_active = true"),
+        "salary_records": scalar("select count(*) from salary_records"),
         "pending_salary": scalar("select count(*) from salary_records where lifecycle_status in ('DRAFT','CALCULATED')"),
         "open_salary_holds": scalar("select count(*) from salary_holds where status = 'HELD'"),
-        "overdue_risks": scalar("select count(*) from risk_flags where resolved = false"),
+        "open_risks": scalar("select count(*) from risk_flags where resolved = false"),
         "unpaid_invoices": scalar("select count(*) from invoices where clearance_status <> 'PAID'"),
     }
 
@@ -85,3 +86,22 @@ def expenses(branch: Optional[str] = Query(None), client_id: Optional[int] = Que
 def risk_flags(db: Session = Depends(get_db), current_user=Depends(require_owner)):
     rows = db.execute(text("select * from risk_flags where resolved=false order by detected_at desc")).mappings().all()
     return [dict(r) for r in rows]
+
+
+@router.get("/risk-engine")
+def risk_engine(db: Session = Depends(get_db), current_user=Depends(require_owner)):
+    """Read-only owner risk scan. It derives operational exceptions without mutating source records."""
+    risks = []
+    def add(code, category, severity, entity_type, entity_id, description):
+        risks.append({"trigger_code": code, "category": category, "severity": severity, "entity_type": entity_type, "entity_id": str(entity_id) if entity_id is not None else None, "description": description})
+    for r in db.execute(text("""select d.id,d.employee_id,e.employee_code,e.name,d.document_type,d.expiry_date from employee_documents d join employees e on e.id=d.employee_id where d.expiry_date < current_date order by d.expiry_date""")).mappings():
+        add("DOC_EXPIRED","COMPLIANCE","HIGH","EMPLOYEE_DOCUMENT",r["id"],f'{r["document_type"]} expired for {r["employee_code"]} - {r["name"]}')
+    for r in db.execute(text("""select id,invoice_number,client_id,due_date,total_amount from invoices where clearance_status <> 'PAID' and due_date < current_date order by due_date""")).mappings():
+        add("INVOICE_OVERDUE","FINANCE","HIGH","INVOICE",r["id"],f'Invoice {r["invoice_number"]} is overdue')
+    for r in db.execute(text("""select id,employee_id,month,amount from salary_records where lifecycle_status = 'HELD'""")).mappings():
+        add("SALARY_HELD","PAYROLL","MEDIUM","SALARY_RECORD",r["id"],f'Salary for {r["month"]} is on hold')
+    for r in db.execute(text("""select id,employee_id,exception_type,description from attendance_exceptions where resolved = false order by created_at desc""")).mappings():
+        add("ATTENDANCE_EXCEPTION","OPERATIONS","MEDIUM","ATTENDANCE_EXCEPTION",r["id"],r["description"] or r["exception_type"])
+    for r in db.execute(text("""select id,compliance_type,period,due_date from corporate_compliances where due_date < current_date and status not in ('FILED','COMPLETED','COMPLIANT') order by due_date""")).mappings():
+        add("COMPLIANCE_OVERDUE","STATUTORY","HIGH","CORPORATE_COMPLIANCE",r["id"],f'{r["compliance_type"]} for {r["period"]} is overdue')
+    return {"count": len(risks), "risks": risks}

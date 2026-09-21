@@ -9,6 +9,7 @@ import Employees from './pages/Employees';
 import Personnel from './pages/Personnel';
 import Clients from './pages/Clients';
 import Sites from './pages/Sites';
+import ControlCenter from './pages/ControlCenter';
 import ClientsView from './pages/ClientsView';
 import SitesView from './pages/SitesView';
 import RosterView from './pages/RosterView';
@@ -31,6 +32,10 @@ function App() {
     <Route path="/rosters" element={<Protected><RosterView /></Protected>} />
     <Route path="/attendance" element={<Protected><AttendanceView /></Protected>} />
     <Route path="/billing" element={<Protected><InvoicesView /></Protected>} />
+    <Route path="/payroll" element={<Protected><ControlCenter type="payroll" /></Protected>} />
+    <Route path="/accounts" element={<Protected><ControlCenter type="accounts" /></Protected>} />
+    <Route path="/compliance" element={<Protected><ControlCenter type="compliance" /></Protected>} />
+    <Route path="/risks" element={<Protected><ControlCenter type="risks" /></Protected>} />
     <Route path="/" element={<RootRedirect />} /><Route path="*" element={<RootRedirect />} />
   </Routes></AuthProvider></Router>;
 }

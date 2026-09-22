@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
+import AdminSetup from './pages/AdminSetup';
 import Dashboard from './pages/Dashboard';
 import ERPModules from './pages/ERPModules';
 import Employees from './pages/Employees';
@@ -25,6 +26,7 @@ function Protected({ children }) { return <ProtectedRoute>{children}</ProtectedR
 function App() {
   return <Router><AuthProvider><Routes>
     <Route path="/login" element={<Login />} />
+    <Route path="/setup-admin" element={<AdminSetup />} />
     <Route path="/erp" element={<Protected><ERPModules /></Protected>} />
     <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
     <Route path="/employees" element={<Protected><Employees /></Protected>} />

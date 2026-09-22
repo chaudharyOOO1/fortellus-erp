@@ -65,14 +65,14 @@ export default function MainLayout({ children, onQuickAction = null }) {
 
   if (role === 'OWNER') {
     navItems = [
-      { icon: LayoutDashboard, label: 'Executive Dashboard', path: '/owner-executive' },
-      { icon: LayoutDashboard, label: 'Command Center', path: '/dashboard' },
-      { icon: Shield, label: 'Staff Personnel', path: '/employees' },
-      { icon: Users, label: 'Client Accounts', path: '/clients' },
-      { icon: MapPin, label: 'Deployment Sites', path: '/sites' },
-      { icon: Calendar, label: 'Duty Rosters', path: '/rosters' },
+      { icon: LayoutDashboard, label: 'ERP Command Center', path: '/erp' },
+      { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
+      { icon: Shield, label: 'Employees & HR', path: '/employees' },
+      { icon: Users, label: 'Clients', path: '/clients' },
+      { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
+      { icon: Calendar, label: 'Rosters', path: '/rosters' },
       { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance' },
-      { icon: ReceiptText, label: 'Billing / Invoices', path: '/billing' },
+      { icon: ReceiptText, label: 'Accounts & Billing', path: '/billing' },
     ];
   } else if (role === 'HR') {
     navItems = [

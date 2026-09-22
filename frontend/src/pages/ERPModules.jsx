@@ -96,7 +96,7 @@ export default function ERPModules() {
           <GlassCard>
             <GlassCard.Header title="Quick Actions" subtitle="Common administrative tasks" />
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => window.location.assign('/personnel')} className="p-3 rounded-xl border border-slate-800 hover:border-cyan-500/30 text-xs font-semibold text-slate-200"><UserPlus className="w-4 h-4 text-cyan-400 mb-1" />Add Employee</button>
+              <button onClick={() => window.location.assign('/employees')} className="p-3 rounded-xl border border-slate-800 hover:border-cyan-500/30 text-xs font-semibold text-slate-200"><UserPlus className="w-4 h-4 text-cyan-400 mb-1" />Add Employee</button>
               <button onClick={() => window.location.assign('/clients')} className="p-3 rounded-xl border border-slate-800 hover:border-cyan-500/30 text-xs font-semibold text-slate-200"><BriefcaseBusiness className="w-4 h-4 text-purple-400 mb-1" />Add Client</button>
             </div>
           </GlassCard>

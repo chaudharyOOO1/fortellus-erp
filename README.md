@@ -244,3 +244,5 @@ The financial control centre for the business:
 The production ERP uses FastAPI on Vercel with Supabase/Postgres as the system of record. The dashboard and core master-data modules consume authenticated `/api/v1` endpoints; client-side demo authentication is disabled in production.
 
 > Production database configuration is supplied through Vercel environment variables; no database credentials are stored in the repository.
+
+<!-- Vercel deployment trigger: 2026-09-23 -->

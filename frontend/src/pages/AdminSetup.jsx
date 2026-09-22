@@ -1,0 +1,79 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { KeyRound, ShieldCheck, Loader2, ArrowRight } from 'lucide-react';
+import api from '../api/axios';
+
+export default function AdminSetup() {
+  const navigate = useNavigate();
+  const [token, setToken] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    if (password !== confirm) return setError('Passwords do not match.');
+    if (password.length < 12) return setError('Use at least 12 characters for the administrator password.');
+    setLoading(true);
+    try {
+      await api.post('/auth/setup-admin', {
+        email: 'admin@fortelluserp.com',
+        password,
+        setup_token: token,
+      });
+      setSuccess(true);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Administrator setup could not be completed.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#f5f7fb]">
+      <div className="w-full max-w-md cyber-panel-glow rounded-3xl p-8 space-y-6">
+        <div className="text-center">
+          <div className="mx-auto w-14 h-14 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 mb-4">
+            <ShieldCheck className="w-8 h-8" />
+          </div>
+          <h1 className="text-2xl font-black text-slate-900">Administrator Setup</h1>
+          <p className="text-sm text-slate-500 mt-2">Initialize your Fortellus ERP administrator password.</p>
+        </div>
+
+        {success ? (
+          <div className="space-y-4 text-center">
+            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-semibold">
+              Password initialized successfully. The setup link is now locked.
+            </div>
+            <button onClick={() => navigate('/login')} className="w-full h-11 rounded-xl bg-teal-700 text-white font-bold flex items-center justify-center gap-2">
+              Go to login <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={submit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">One-time setup token</label>
+              <input required type="password" value={token} onChange={e => setToken(e.target.value)} className="w-full cyber-input" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">New administrator password</label>
+              <input required minLength={12} type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full cyber-input" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Confirm password</label>
+              <input required minLength={12} type="password" value={confirm} onChange={e => setConfirm(e.target.value)} className="w-full cyber-input" />
+            </div>
+            {error && <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">{error}</div>}
+            <button disabled={loading} className="w-full h-11 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold flex items-center justify-center gap-2 disabled:opacity-50">
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><KeyRound className="w-4 h-4" /> Set administrator password</>}
+            </button>
+          </form>
+        )}
+        <p className="text-center text-xs text-slate-500">For security, this setup can only be completed once.</p>
+      </div>
+    </div>
+  );
+}

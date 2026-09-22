@@ -5,8 +5,8 @@
       "root": "frontend/"
     },
     "backend": {
-      "root": "./",
-      "entrypoint": "api/index.py"
+      "root": "backend/",
+      "entrypoint": "main:app"
     }
   },
   "rewrites": [

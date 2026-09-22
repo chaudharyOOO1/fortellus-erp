@@ -63,26 +63,9 @@ export function AuthProvider({ children }) {
       setApiConnected(true);
       return { success: true };
     } catch (error) {
-      const cleanEmail = (email || '').trim().toLowerCase();
-      const matched = INITIAL_USERS.find((u) => u.email.toLowerCase() === cleanEmail);
-      if (matched) {
-        const demoToken = `demo-${matched.role.toLowerCase()}-token`;
-        localStorage.setItem('access_token', demoToken);
-        localStorage.setItem('user', JSON.stringify(matched));
-        setToken(demoToken);
-        setUser(matched);
-        return { success: true, isDemo: true };
-      }
+      // Production mode: never create a client-only token when the API rejects login.
+      // This keeps all protected ERP screens backed by real JWT authentication.
 
-      if (cleanEmail.includes('admin') || cleanEmail.includes('stiner')) {
-        const adminUser = INITIAL_USERS[0];
-        const demoToken = 'demo-admin-token';
-        localStorage.setItem('access_token', demoToken);
-        localStorage.setItem('user', JSON.stringify(adminUser));
-        setToken(demoToken);
-        setUser(adminUser);
-        return { success: true, isDemo: true };
-      }
 
       const message = error.response?.data?.detail || 'Invalid email or password.';
       return { success: false, error: message };

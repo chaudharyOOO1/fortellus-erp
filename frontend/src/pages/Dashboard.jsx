@@ -14,14 +14,6 @@ import { useAuth } from '../context/useAuth';
 import { formatCurrency, formatDate } from '../utils/helpers';
 import api from '../api/axios';
 import {
-  INITIAL_GUARDS,
-  INITIAL_CLIENTS,
-  INITIAL_SITES,
-  INITIAL_ROSTERS,
-  INITIAL_ATTENDANCE,
-  INITIAL_INVOICES,
-} from '../api/mockData';
-import {
   Shield,
   MapPin,
   ClipboardList,
@@ -46,12 +38,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const role = user?.role || 'ADMIN';
 
-  const [guards, setGuards] = useState(INITIAL_GUARDS);
-  const [clients, setClients] = useState(INITIAL_CLIENTS);
-  const [sites, setSites] = useState(INITIAL_SITES);
-  const [rosters, setRosters] = useState(INITIAL_ROSTERS);
-  const [attendance, setAttendance] = useState(INITIAL_ATTENDANCE);
-  const [invoices, setInvoices] = useState(INITIAL_INVOICES);
+  const [guards, setGuards] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [sites, setSites] = useState([]);
+  const [rosters, setRosters] = useState([]);
+  const [attendance, setAttendance] = useState([]);
+  const [invoices, setInvoices] = useState([]);
 
   // Active drawer & modals
   const [selectedDrawerItem, setSelectedDrawerItem] = useState(null);
@@ -67,21 +59,45 @@ export default function Dashboard() {
   const [punchToast, setPunchToast] = useState('');
 
   useEffect(() => {
+    let mounted = true;
     Promise.allSettled([
-      api.get('/guards/'),
-      api.get('/clients/'),
-      api.get('/sites/'),
-      api.get('/rosters/'),
-      api.get('/attendances/'),
-      api.get('/invoices/'),
-    ]).then(([gRes, cRes, sRes, rRes, aRes, iRes]) => {
-      if (gRes.status === 'fulfilled' && Array.isArray(gRes.value?.data) && gRes.value.data.length) setGuards(gRes.value.data);
-      if (cRes.status === 'fulfilled' && Array.isArray(cRes.value?.data) && cRes.value.data.length) setClients(cRes.value.data);
-      if (sRes.status === 'fulfilled' && Array.isArray(sRes.value?.data) && sRes.value.data.length) setSites(sRes.value.data);
-      if (rRes.status === 'fulfilled' && Array.isArray(rRes.value?.data) && rRes.value.data.length) setRosters(rRes.value.data);
-      if (aRes.status === 'fulfilled' && Array.isArray(aRes.value?.data) && aRes.value.data.length) setAttendance(aRes.value.data);
-      if (iRes.status === 'fulfilled' && Array.isArray(iRes.value?.data) && iRes.value.data.length) setInvoices(iRes.value.data);
+      api.get('/erp/employees'),
+      api.get('/erp/clients'),
+      api.get('/erp/sites'),
+      api.get('/erp/rosters'),
+      api.get('/erp/attendance'),
+      api.get('/erp/accounts'),
+    ]).then(([eRes, cRes, sRes, rRes, aRes, acRes]) => {
+      if (!mounted) return;
+      if (eRes.status === 'fulfilled') {
+        setGuards((eRes.value.data || []).map((e) => ({
+          ...e,
+          guard_id: e.id,
+          guard_name: e.name,
+          guard_badge: e.employee_code,
+          status: String(e.status || '').toUpperCase(),
+        })));
+      }
+      if (cRes.status === 'fulfilled') setClients(cRes.value.data || []);
+      if (sRes.status === 'fulfilled') setSites(sRes.value.data || []);
+      if (rRes.status === 'fulfilled') setRosters(rRes.value.data || []);
+      if (aRes.status === 'fulfilled') {
+        setAttendance((aRes.value.data || []).map((a) => ({
+          ...a,
+          guard_name: a.name || a.employee_code,
+          status: String(a.status || '').toUpperCase(),
+          remarks: a.violation_type || 'Standard Duty',
+        })));
+      }
+      if (acRes.status === 'fulfilled') {
+        setInvoices((acRes.value.data?.invoices || []).map((i) => ({
+          ...i,
+          client_name: i.company_name,
+          billing_month: i.billing_month || i.issue_date,
+        })));
+      }
     });
+    return () => { mounted = false; };
   }, []);
 
   const activeGuardsCount = guards.filter((g) => g.status === 'ACTIVE').length;

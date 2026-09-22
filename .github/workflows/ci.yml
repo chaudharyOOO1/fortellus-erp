@@ -19,6 +19,6 @@ jobs:
         run: npm ci && npm run build
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Compile backend
         run: python -m compileall backend api

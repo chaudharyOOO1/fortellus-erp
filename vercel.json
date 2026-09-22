@@ -3,11 +3,6 @@
   "buildCommand": "cd frontend && npm ci && npm run build",
   "installCommand": "cd frontend && npm ci",
   "outputDirectory": "frontend/dist",
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.13"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",

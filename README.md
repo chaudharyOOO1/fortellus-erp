@@ -239,7 +239,8 @@ The financial control centre for the business:
 
 *APEX OPS Security & Facility ERP — Confidential Client Preview · August 2026*
 
-
 ## Live production data layer
 
 The production ERP uses FastAPI on Vercel with Supabase/Postgres as the system of record. The dashboard and core master-data modules consume authenticated `/api/v1` endpoints; client-side demo authentication is disabled in production.
+
+> Production database configuration is supplied through Vercel environment variables; no database credentials are stored in the repository.

@@ -1,13 +1,15 @@
 from datetime import timedelta
 from typing import Any
+import secrets
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_active_user
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.security import create_access_token
+from app.core.security import create_access_token, get_password_hash
 from app.crud.crud_user import user as crud_user
 from app.models.user import User
 from app.schemas.token import Token, LoginRequest
@@ -76,6 +78,36 @@ def login_access_token(
         "token_type": "bearer",
         "user": user,
     }
+
+
+class AdminSetupRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=12, max_length=72)
+    setup_token: str = Field(min_length=16, max_length=256)
+
+
+@router.post("/setup-admin")
+def setup_admin_password(
+    setup_data: AdminSetupRequest,
+    db: Session = Depends(get_db),
+) -> dict:
+    """One-time administrator password setup using a server-side setup token."""
+    configured_token = settings.ADMIN_SETUP_TOKEN
+    if not configured_token or not secrets.compare_digest(setup_data.setup_token, configured_token):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid administrator setup token.")
+
+    admin = db.query(User).filter(User.email == setup_data.email).first()
+    if not admin or not admin.is_active or not admin.is_superuser:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrator account not found.")
+    if getattr(admin, "password_initialized_at", None) is not None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Administrator password has already been initialized.")
+
+    admin.hashed_password = get_password_hash(setup_data.password)
+    from sqlalchemy import func
+    admin.password_initialized_at = db.query(func.now()).scalar()
+    db.add(admin)
+    db.commit()
+    return {"status": "success", "message": "Administrator password initialized. You can now sign in normally."}
 
 
 @router.get("/me", response_model=UserResponse)

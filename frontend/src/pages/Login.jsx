@@ -4,8 +4,8 @@ import { useAuth } from '../context/useAuth';
 import { Lock, Mail, Loader2, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export default function Login() {
-  const [email, setEmail] = useState('admin@securityerp.com');
-  const [password, setPassword] = useState('Admin@12345');
+  const [email, setEmail] = useState('admin@fortelluserp.com');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@securityerp.com"
+                placeholder="admin@fortelluserp.com"
                 className="w-full cyber-input pl-10 h-11"
               />
             </div>
@@ -111,39 +111,13 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-slate-800 space-y-2">
+        <div className="pt-4 border-t border-slate-200 space-y-2">
           <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono text-center font-bold">
-            1-Click Demo Personas
+            Production administrator access
           </p>
-
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickFill('admin@securityerp.com', 'Admin@12345')}
-              className="p-2 rounded-xl cyber-card border border-slate-800 hover:border-cyan-500/40 text-center transition-all group"
-            >
-              <p className="font-bold text-white text-[11px] group-hover:text-cyan-400">Admin</p>
-              <span className="text-[9px] font-mono text-slate-500">Full Control</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickFill('client.manager@acmecorp.com', 'Client@12345')}
-              className="p-2 rounded-xl cyber-card border border-slate-800 hover:border-purple-500/40 text-center transition-all group"
-            >
-              <p className="font-bold text-white text-[11px] group-hover:text-purple-400">Client</p>
-              <span className="text-[9px] font-mono text-slate-500">Acme Corp</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickFill('guard.ramesh@securityerp.com', 'Guard@12345')}
-              className="p-2 rounded-xl cyber-card border border-slate-800 hover:border-amber-500/40 text-center transition-all group"
-            >
-              <p className="font-bold text-white text-[11px] group-hover:text-amber-400">Guard</p>
-              <span className="text-[9px] font-mono text-slate-500">Staff Gate</span>
-            </button>
-          </div>
+          <p className="text-center text-[11px] text-slate-500">
+            Use your authorized Fortellus administrator credentials.
+          </p>
         </div>
 
         <p className="text-center text-[11px] text-slate-500 font-mono">

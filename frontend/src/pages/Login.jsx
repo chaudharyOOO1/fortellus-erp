@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { Lock, Mail, Loader2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Lock, Mail, Loader2, ShieldCheck, ArrowRight, KeyRound } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('admin@fortelluserp.com');
@@ -111,7 +111,7 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-slate-200 space-y-2">
+        <div className="pt-4 border-t border-slate-200 space-y-2">\n          <button type="button" onClick={() => navigate("/setup-admin")} className="mx-auto flex items-center gap-2 text-xs font-semibold text-teal-700 hover:text-teal-800"><KeyRound className="w-3.5 h-3.5" /> First-time administrator setup</button>
           <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono text-center font-bold">
             Production administrator access
           </p>

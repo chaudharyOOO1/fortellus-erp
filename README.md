@@ -245,4 +245,4 @@ The production ERP uses FastAPI on Vercel with Supabase/Postgres as the system o
 
 > Production database configuration is supplied through Vercel environment variables; no database credentials are stored in the repository.
 
-<!-- Vercel deployment trigger: 2026-09-23 -->
+<!-- Vercel webhook test: 2026-09-23T00:00 -->

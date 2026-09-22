@@ -4,29 +4,12 @@
   :root {
     --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     --color-bg-base: #f5f7fb;
-    --color-bg-subtle: #eef2f7;
     --color-surface: #ffffff;
-    --color-surface-hover: #f8fafc;
-    --color-surface-border: #e5eaf1;
-    --color-cyan-glow: #0f766e;
-    --color-cyan-dim: rgba(15, 118, 110, 0.10);
-    --color-matrix-green: #059669;
-    --color-amber-alert: #d97706;
-    --color-crimson-alert: #dc2626;
-    --color-purple-accent: #7c3aed;
+    --color-border: #e5eaf1;
+    --color-accent: #0f766e;
   }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-    color-scheme: light;
-  }
-
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; color-scheme: light; }
   body {
     font-family: var(--font-sans);
     background: #f5f7fb !important;
@@ -34,42 +17,27 @@
     min-height: 100vh;
     overflow-x: hidden;
     background-image:
-      radial-gradient(at 0% 0%, rgba(15, 118, 110, 0.035) 0, transparent 48%),
-      radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.025) 0, transparent 48%);
+      radial-gradient(at 0% 0%, rgba(15,118,110,.035) 0, transparent 48%),
+      radial-gradient(at 100% 0%, rgba(124,58,237,.025) 0, transparent 48%);
     background-attachment: fixed;
   }
-
-  button, input, select, textarea {
-    font: inherit;
-  }
+  button, input, select, textarea { font: inherit; }
 }
 
 /* Fortellus Enterprise Light Theme */
-.bg-\[\#060913\] { background-color: #f5f7fb !important; }
-.bg-\[\#060913\]\/60 { background-color: rgba(245,247,251,.92) !important; }
-.bg-slate-950, .bg-slate-950\/40, .bg-slate-950\/50 { background-color: #ffffff !important; }
-.bg-slate-900, .bg-slate-900\/60 { background-color: #f8fafc !important; }
-.bg-slate-800, .bg-slate-800\/60 { background-color: #eef2f7 !important; }
-
+.bg-slate-950 { background-color: #ffffff !important; }
+.bg-slate-900 { background-color: #f8fafc !important; }
+.bg-slate-800 { background-color: #eef2f7 !important; }
 .text-white { color: #172033 !important; }
 .text-slate-200 { color: #273449 !important; }
 .text-slate-300 { color: #475569 !important; }
 .text-slate-400 { color: #64748b !important; }
 .text-slate-500 { color: #718096 !important; }
-.text-slate-600 { color: #526277 !important; }
-
-.border-slate-800, .border-slate-800\/80, .border-slate-700 {
-  border-color: #e2e8f0 !important;
-}
-.border-slate-800\/80 { border-color: #e5eaf1 !important; }
-
-.hover\\:bg-slate-800:hover, .hover\\:bg-slate-800\\/60:hover {
-  background-color: #f1f5f9 !important;
-}
-.hover\\:text-white:hover { color: #0f172a !important; }
+.border-slate-800 { border-color: #e2e8f0 !important; }
+.border-slate-700 { border-color: #d8e1eb !important; }
 
 .cyber-panel {
-  background: rgba(255,255,255,.96);
+  background: rgba(255,255,255,.97);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid #e2e8f0;
@@ -77,7 +45,7 @@
 }
 
 .cyber-panel-glow {
-  background: rgba(255,255,255,.98);
+  background: rgba(255,255,255,.99);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid #d9e2ec;
@@ -86,12 +54,10 @@
 
 .cyber-card {
   background: #ffffff;
-  backdrop-filter: blur(12px);
   border: 1px solid #e5eaf1;
   box-shadow: 0 4px 18px rgba(15,23,42,.035);
   transition: all .25s cubic-bezier(.4,0,.2,1);
 }
-
 .cyber-card:hover {
   border-color: rgba(15,118,110,.28);
   transform: translateY(-2px);
@@ -108,13 +74,10 @@
   transition: all .2s ease;
   outline: none;
 }
-
 .cyber-input::placeholder { color: #94a3b8; }
-
 .cyber-input:focus {
   border-color: #0f766e;
   box-shadow: 0 0 0 3px rgba(15,118,110,.10);
-  background: #ffffff !important;
 }
 
 ::-webkit-scrollbar { width: 7px; height: 7px; }
@@ -126,10 +89,7 @@
 .hud-corner::after {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
+  top: 0; right: 0; width: 8px; height: 8px;
   border-top: 2px solid #0f766e;
   border-right: 2px solid #0f766e;
 }
@@ -151,5 +111,3 @@
   to { transform: translateX(0); }
 }
 .drawer-enter { animation: drawer-slide-in .3s cubic-bezier(.16,1,.3,1) forwards; }
-
-/* Keep semantic status colours crisp on the light surface. */

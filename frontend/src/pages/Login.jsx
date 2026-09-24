@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { Lock, Mail, Loader2, ShieldCheck, ArrowRight, KeyRound } from 'lucide-react';
+import { Eye, EyeOff, LockKeyhole, Mail, Loader2, ShieldCheck, ArrowRight, KeyRound } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('admin@fortelluserp.com');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -17,64 +18,42 @@ export default function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
-    const result = await login(email, password);
-    if (result.success) navigate('/dashboard');
-    else setError(result.error);
+    const result = await login(email.trim(), password);
+    if (result.success) navigate('/dashboard', { replace: true });
+    else setError(result.error || 'Unable to sign in. Check your credentials.');
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-[#f5f7fb]">
-      <div className="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-200 shadow-xl space-y-6">
-        <div className="text-center">
-          <div className="mx-auto w-14 h-14 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 mb-4">
-            <ShieldCheck className="w-8 h-8" />
+    <main className="min-h-screen bg-white text-slate-900 flex">
+      <section className="hidden lg:flex lg:w-[46%] bg-slate-950 text-white relative overflow-hidden p-12 xl:p-16 flex-col justify-between">
+        <div className="absolute inset-0 opacity-20" style={{backgroundImage:'linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)', backgroundSize:'48px 48px'}} />
+        <div className="relative">
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-xl bg-white flex items-center justify-center shadow-lg"><ShieldCheck className="h-6 w-6 text-slate-950" /></div>
+            <div><div className="text-xl font-bold tracking-tight">FORTELLUS</div><div className="text-[10px] tracking-[.28em] text-slate-400">ENTERPRISE ERP</div></div>
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Fortellus ERP</h1>
-          <p className="text-sm font-semibold text-slate-600 mt-1">Administrator Login</p>
-          <p className="text-xs text-slate-400 mt-1">Secure enterprise operations portal</p>
         </div>
-
-        {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold text-center">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">Administrator email</label>
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-teal-600" />
-              <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="admin@fortelluserp.com" className="w-full cyber-input pl-10 h-11" />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">Administrator password</label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-teal-600" />
-              <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
-                placeholder="Enter your password" className="w-full cyber-input pl-10 h-11" />
-            </div>
-          </div>
-
-          <button type="submit" disabled={loading}
-            className="w-full h-11 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50">
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Sign in <ArrowRight className="w-4 h-4" /></>}
-          </button>
-        </form>
-
-        <div className="pt-4 border-t border-slate-200 text-center space-y-2">
-          <button type="button" onClick={() => navigate('/setup-admin')}
-            className="mx-auto flex items-center gap-2 text-sm font-semibold text-teal-700 hover:text-teal-800">
-            <KeyRound className="w-4 h-4" /> First-time administrator setup
-          </button>
-          <p className="text-[10px] text-slate-400 uppercase tracking-widest font-mono font-bold">
-            Production administrator access
-          </p>
+        <div className="relative max-w-lg">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 mb-6"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />Secure operations platform</div>
+          <h1 className="text-4xl xl:text-5xl font-semibold tracking-tight leading-[1.08]">One control center for your workforce.</h1>
+          <p className="mt-5 text-base leading-7 text-slate-400 max-w-md">Manage clients, sites, employees, attendance, payroll and billing from a single operational workspace.</p>
         </div>
-      </div>
-    </div>
+        <div className="relative flex items-center gap-6 text-xs text-slate-500"><span>© {new Date().getFullYear()} Fortellus</span><span>•</span><span>Administrator access</span></div>
+      </section>
+      <section className="w-full lg:w-[54%] flex items-center justify-center px-5 py-10 sm:px-8">
+        <div className="w-full max-w-[440px]">
+          <div className="lg:hidden flex items-center gap-3 mb-12"><div className="h-10 w-10 rounded-xl bg-slate-950 flex items-center justify-center"><ShieldCheck className="h-5 w-5 text-white" /></div><div><div className="font-bold tracking-tight">FORTELLUS</div><div className="text-[9px] tracking-[.25em] text-slate-400">ENTERPRISE ERP</div></div></div>
+          <div className="mb-9"><p className="text-xs font-semibold uppercase tracking-[.18em] text-slate-500">Administrator portal</p><h2 className="mt-3 text-3xl font-semibold tracking-tight">Welcome back</h2><p className="mt-2 text-sm text-slate-500">Sign in to continue to your Fortellus workspace.</p></div>
+          {error && <div role="alert" className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div><label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">Email address</label><div className="relative"><Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input id="email" type="email" autoComplete="username" required value={email} onChange={e => setEmail(e.target.value)} className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-10 pr-4 text-sm outline-none transition focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5" placeholder="admin@fortelluserp.com" /></div></div>
+            <div><label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">Password</label><div className="relative"><LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-10 pr-12 text-sm outline-none transition focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5" placeholder="Enter your password" /><button type="button" onClick={() => setShowPassword(v => !v)} aria-label={showPassword ? 'Hide password' : 'Show password'} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div>
+            <button type="submit" disabled={loading} className="h-12 w-full rounded-xl bg-slate-950 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2">{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Sign in <ArrowRight className="h-4 w-4" /></>}</button>
+          </form>
+          <div className="mt-7 border-t border-slate-200 pt-6"><button type="button" onClick={() => navigate('/setup-admin')} className="flex w-full items-center justify-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950 transition"><KeyRound className="h-4 w-4" /> First-time administrator setup</button><p className="mt-4 text-center text-xs text-slate-400">Protected production environment</p></div>
+        </div>
+      </section>
+    </main>
   );
+}
 }

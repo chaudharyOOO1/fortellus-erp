@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KeyRound, ShieldCheck, Loader2, ArrowRight } from 'lucide-react';
+import { KeyRound, ShieldCheck, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import api from '../api/axios';
 
 export default function AdminSetup() {
@@ -11,6 +11,7 @@ export default function AdminSetup() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
@@ -33,13 +34,13 @@ export default function AdminSetup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#f5f7fb]">
-      <div className="w-full max-w-md cyber-panel-glow rounded-3xl p-8 space-y-6">
+    <div className="min-h-screen bg-white flex items-center justify-center p-5">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-8 sm:p-10 shadow-sm space-y-7">
         <div className="text-center">
           <div className="mx-auto w-14 h-14 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 mb-4">
             <ShieldCheck className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-black text-slate-900">Administrator Setup</h1>
+          <p className="text-xs font-semibold uppercase tracking-[.18em] text-slate-500">Fortellus ERP</p><h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Administrator setup</h1>
           <p className="text-sm text-slate-500 mt-2">Initialize your Fortellus ERP administrator password.</p>
         </div>
 
@@ -56,18 +57,18 @@ export default function AdminSetup() {
           <form onSubmit={submit} className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">One-time setup token</label>
-              <input required type="password" value={token} onChange={e => setToken(e.target.value)} className="w-full cyber-input" />
+              <input required type="password" value={token} onChange={e => setToken(e.target.value)} className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5" />
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">New administrator password</label>
-              <input required minLength={12} type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full cyber-input" />
+              <input required minLength={12} type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5" />
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Confirm password</label>
-              <input required minLength={12} type="password" value={confirm} onChange={e => setConfirm(e.target.value)} className="w-full cyber-input" />
+              <input required minLength={12} type="password" value={confirm} onChange={e => setConfirm(e.target.value)} className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5" />
             </div>
             {error && <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">{error}</div>}
-            <button disabled={loading} className="w-full h-11 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold flex items-center justify-center gap-2 disabled:opacity-50">
+            <button disabled={loading} className="w-full h-12 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><KeyRound className="w-4 h-4" /> Set administrator password</>}
             </button>
           </form>

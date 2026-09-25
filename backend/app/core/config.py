@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     DATABASE_URL: Union[str, None] = None
     ADMIN_SETUP_TOKEN: Union[str, None] = None
 
-    # Production may be opened through a Vercel deployment URL as well as the stable alias.\n    # Keep the explicit stable origins and allow Fortellus frontend deployment aliases.\n    BACKEND_CORS_ORIGINS: Union[List[str], str] = [
+    BACKEND_CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:8000",
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
         "https://frontend-nu-five-evlm3uvoo2.vercel.app",
     ]
 
-    BACKEND_CORS_ORIGIN_REGEX: Union[str, None] = r"https://frontend-[a-z0-9-]+-fortellus\\.vercel\\.app"\n\n    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
         if isinstance(v, str) and not v.startswith("["):

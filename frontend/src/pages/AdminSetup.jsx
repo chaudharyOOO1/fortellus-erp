@@ -27,7 +27,13 @@ export default function AdminSetup() {
       });
       setSuccess(true);
     } catch (err) {
-      const detail = err.response?.data?.detail;\n      const status = err.response?.status;\n      if (detail) setError(detail);\n      else if (status) setError(`Administrator setup failed (HTTP ${status}).`);\n      else if (err.code === 'ECONNABORTED') setError('The ERP server took too long to respond. Please wait a few seconds and try again.');\n      else if (err.message) setError(`Connection error: ${err.message}`);\n      else setError('Administrator setup could not be completed.');
+      const detail = err.response?.data?.detail;
+      const status = err.response?.status;
+      if (detail) setError(detail);
+      else if (status) setError(`Administrator setup failed (HTTP ${status}).`);
+      else if (err.code === 'ECONNABORTED') setError('The ERP server took too long to respond. Please wait a few seconds and try again.');
+      else if (err.message) setError(`Connection error: ${err.message}`);
+      else setError('Administrator setup could not be completed.');
     } finally {
       setLoading(false);
     }

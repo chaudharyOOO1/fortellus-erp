@@ -29,6 +29,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
         "https://frontend-fortellus.vercel.app",
         "https://frontend-nu-five-evlm3uvoo2.vercel.app",
+        "https://frontend-git-main-fortellus.vercel.app",
+        "https://frontend-6upexdcp8-fortellus.vercel.app",
     ]
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")

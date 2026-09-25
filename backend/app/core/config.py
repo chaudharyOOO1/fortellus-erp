@@ -31,6 +31,7 @@ class Settings(BaseSettings):
         "https://frontend-nu-five-evlm3uvoo2.vercel.app",
         "https://frontend-git-main-fortellus.vercel.app",
         "https://frontend-6upexdcp8-fortellus.vercel.app",
+        "https://frontend-ntbly181o-fortellus.vercel.app",
     ]
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")

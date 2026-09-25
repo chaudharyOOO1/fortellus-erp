@@ -27,7 +27,7 @@ const api = axios.create({
   },
   // Fast timeout (4s) so if backend is unreachable on client presentations,
   // the app transitions seamlessly to the offline mock dataset without freezing.
-  timeout: 4000,
+  timeout: 20000,\n  // Administrator setup may hit a cold FastAPI function; allow enough time for first startup.
 });
 
 // Request interceptor — attach JWT

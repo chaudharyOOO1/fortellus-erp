@@ -6,16 +6,16 @@ import axios from 'axios';
 // 3. In production without env var, use relative /api/v1 to prevent Mixed Content HTTP/HTTPS browser blocks.
 const envApiUrl = import.meta.env.VITE_API_BASE_URL;
 
-let API_BASE_URL = 'http://localhost:8000/api/v1';
+// Production must always use the public FastAPI backend. This avoids a stale
+// Vercel environment variable pointing the browser at the wrong deployment.
+let API_BASE_URL = import.meta.env.PROD
+  ? 'https://backend-fortellus.vercel.app/api/v1'
+  : 'http://localhost:8000/api/v1';
 
-if (envApiUrl) {
+if (envApiUrl && !import.meta.env.PROD) {
   API_BASE_URL = envApiUrl.endsWith('/api/v1')
     ? envApiUrl
     : `${envApiUrl.replace(/\/$/, '')}/api/v1`;
-} else if (import.meta.env.PROD) {
-  // Production frontend and FastAPI backend are deployed as separate Vercel projects.
-  // Use the dedicated backend deployment when no VITE_API_BASE_URL is configured.
-  API_BASE_URL = 'https://backend-fortellus.vercel.app/api/v1';
 }
 
 export { API_BASE_URL };

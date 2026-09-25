@@ -13,7 +13,9 @@ if (envApiUrl) {
     ? envApiUrl
     : `${envApiUrl.replace(/\/$/, '')}/api/v1`;
 } else if (import.meta.env.PROD) {
-  API_BASE_URL = '/api/v1';
+  // Production frontend and FastAPI backend are deployed as separate Vercel projects.
+  // Use the dedicated backend deployment when no VITE_API_BASE_URL is configured.
+  API_BASE_URL = 'https://fortellus-erp.vercel.app/api/v1';
 }
 
 export { API_BASE_URL };

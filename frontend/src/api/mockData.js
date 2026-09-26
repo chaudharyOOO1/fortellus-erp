@@ -7,6 +7,7 @@ export const INITIAL_USERS = [
   {
     id: 1,
     email: "owner@fortellus.com",
+    personaPassword: "auth0000",
     full_name: "Fortellus Owner",
     phone_number: "+91-9000000001",
     role: "OWNER",
@@ -27,6 +28,7 @@ export const INITIAL_USERS = [
   {
     id: 3,
     email: "hr@fortellus.com",
+    personaPassword: "auth0000",
     full_name: "HR Manager",
     phone_number: "+91-9000000003",
     role: "HR",
@@ -37,6 +39,7 @@ export const INITIAL_USERS = [
   {
     id: 4,
     email: "operations@fortellus.com",
+    personaPassword: "auth0000",
     full_name: "Operations Manager",
     phone_number: "+91-9000000004",
     role: "OPERATIONS",
@@ -47,6 +50,7 @@ export const INITIAL_USERS = [
   {
     id: 5,
     email: "accounts@fortellus.com",
+    personaPassword: "auth0000",
     full_name: "Accounts Manager",
     phone_number: "+91-9000000005",
     role: "ACCOUNTS",
@@ -67,6 +71,7 @@ export const INITIAL_USERS = [
   {
     id: 7,
     email: "client@techpark.com",
+    personaPassword: "auth0000",
     full_name: "TechPark Client POC",
     phone_number: "+91-9000000007",
     role: "CLIENT",
@@ -77,6 +82,7 @@ export const INITIAL_USERS = [
   {
     id: 8,
     email: "guard@fortellus.com",
+    personaPassword: "auth0000",
     full_name: "Field Guard",
     phone_number: "+91-9000000008",
     role: "STAFF",

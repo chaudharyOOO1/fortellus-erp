@@ -9,6 +9,7 @@ export default function ProtectedRoute({ children, allowedRoles = null, permissi
 
   useEffect(() => {
     if (!isAuthenticated) navigate('/login', { replace: true, state: { from: location.pathname } });
+    else if (!permissionsLoading && !user?.password_initialized_at && location.pathname !== '/account') navigate('/account', { replace: true });
     else if (!permissionsLoading && permission && !can(permission)) navigate('/account', { replace: true });
     else if (!permissionsLoading && Array.isArray(allowedRoles) && allowedRoles.length && !allowedRoles.includes(user?.role)) navigate('/account', { replace: true });
   }, [isAuthenticated, permissionsLoading, permission, allowedRoles, user, can, navigate, location.pathname]);

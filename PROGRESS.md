@@ -1,49 +1,51 @@
-You are the Lead Full-Stack Engineer for the Security & Facility Management ERP located in `D:\Clients_works\security_erp`. 
+# Fortellus Enterprise ERP — Implementation Progress
 
-Execute the project setup autonomously using the phase-based workflow below. If an action requires multiple turns or hits context limits, complete the active phase, update `PROGRESS.md`, and log what needs to be done next.
+Last updated: 2026-09-26
+Active roadmap: Master Implementation Plan v2.0
 
----
+## Phase 1 — Brand Unification & Granular RBAC
 
-### PHASE 1: DISCOVERY & AUDIT
-1. Scan the filesystem at `D:\Clients_works\security_erp`.
-2. Inspect any existing files in `backend/` and `frontend/`.
-3. Create or update `PROGRESS.md` in the root folder with a detailed checklist containing:
-   - [ ] Backend State (SQLAlchemy models, FastAPI routes, JWT auth)
-   - [ ] Database Setup (Connection configs, requirements.txt)
-   - [ ] Frontend Setup (Vite React, Tailwind CSS, Axios API instance)
-   - [ ] Component Mapping (Clients, Sites, Duty Rosters, Attendance, Invoices)
+### Backend
+- [x] Fortellus project identity updated in FastAPI settings.
+- [x] Version baseline updated to 2.0.0.
+- [x] Enterprise roles present in `UserRole`: OWNER, SUPER_ADMIN, ADMIN (legacy), HR, OPERATIONS, ACCOUNTS, SUPERVISOR, CLIENT, STAFF.
+- [x] JWT access tokens now carry the authenticated user's role claim.
+- [x] `RoleChecker` accepts multiple roles.
+- [x] Added `require_roles(...)` helper.
+- [x] Added strict `get_current_owner` helper.
+- [x] Existing admin dependencies remain compatible with the legacy ADMIN role.
+- [x] Production Supabase users provisioned for the enterprise persona set; credentials inherit the existing administrator password hash and must be reset to the client's chosen initial password if different.
 
----
+### Frontend
+- [x] Browser title and metadata updated to Fortellus Security & Facility Management ERP.
+- [x] Main application branding updated to FORTELLUS ENTERPRISE ERP.
+- [x] Owner Executive navigation shell added and hidden from non-OWNER roles.
+- [x] Login page rebranded to Fortellus enterprise portal.
+- [x] Quick persona login chips added for Owner, HR, Operations, Accounts, Client and Employee.
+- [x] Persona switching now uses live API authentication instead of client-only demo tokens.
+- [x] `ProtectedRoute` now supports role-based access restrictions and a 403 state.
+- [x] Application routes assigned to enterprise role groups.
 
-### PHASE 2: BACKEND COMPLETION & SCHEMA VERIFICATION
-1. Verify or create the FastAPI backend in `backend/` with SQLAlchemy models:
-   - `User` (roles: ADMIN, CLIENT, STAFF)
-   - `Client` & `Site` (location & contract details)
-   - `GuardProfile` & `ShiftRoster` (guard allocations & shifts)
-   - `Attendance` (daily status, overtime)
-   - `Invoice` (monthly billing)
-2. Ensure JWT authentication (`routers/auth.py`) and CRUD endpoints (`routers/`) are structured correctly.
-3. Write/verify `backend/requirements.txt` (`fastapi`, `uvicorn`, `sqlalchemy`, `psycopg2-binary`, `python-jose`, `passlib`).
+### Production / Verification
+- [x] Latest production deployment reached READY.
+- [x] Production login HTML returns HTTP 200.
+- [x] Production bundle contains Fortellus branding, owner-executive route, and 403 guard.
+- [x] Supabase `users` table contains the enterprise role accounts.
+- [ ] Verify live persona credentials end-to-end through the production login form.
+- [ ] Replace the temporary Phase 1 Owner Executive shell with the full Phase 6 implementation.
 
----
+## STOP & HANDOVER CHECKPOINT 1
 
-### PHASE 3: FRONTEND SETUP & API INTEGRATION
-1. Check `frontend/`. If not present, initialize a Vite React application with Tailwind CSS inside `frontend/`.
-2. Install `axios` and `react-router-dom` using terminal commands.
-3. Create `frontend/src/api.js` configured with Axios pointing to `http://localhost:8000`, including request interceptors to automatically attach JWT tokens.
+Current checkpoint status: **READY TO HAND OVER TO PHASE 2**
 
----
+Next phase:
+1. Recruitment candidate pipeline: APPLIED → VERIFIED → ONBOARDED.
+2. Unified multi-vertical Staff Profile.
+3. KYC/statutory/arms/uniform fields.
+4. Compliance expiry evaluation and BENCH locking.
+5. Personnel UI with recruitment and compliance tabs.
 
-### PHASE 4: UI COMPONENT BUILD & ENDPOINT MAPPING
-Build the React UI components inside `frontend/src/pages/` and map them to their respective FastAPI endpoints:
-1. `Login.jsx` $\rightarrow$ Auth endpoint (`/auth/login`)
-2. `DashboardLayout.jsx` $\rightarrow$ Main sidebar navigation shell
-3. `ClientsView.jsx` $\rightarrow$ CRUD endpoints (`/clients`, `/sites`)
-4. `RosterView.jsx` $\rightarrow$ Shift assignment grid (`/rosters`)
-5. `AttendanceView.jsx` $\rightarrow$ Bulk daily attendance logger (`/attendance`)
-6. `InvoicesView.jsx` $\rightarrow$ Monthly invoice generator (`/billing/generate-invoice`)
-
----
-
-### PHASE 5: PROGRESS LOGGING
-At the end of every execution phase or before pausing, check off completed tasks in `PROGRESS.md` so the project status is preserved across sessions.
+## Repository audit notes
+- Existing production stack: React/Vite frontend + FastAPI backend + Supabase PostgreSQL.
+- Existing Supabase schema already contains employees, attendance, salary, invoices, GST/ITC, compliance and risk tables.
+- Existing `client_field_officers` table is present and RLS-enabled from the preceding ERP upgrade work.

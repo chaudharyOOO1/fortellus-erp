@@ -42,7 +42,7 @@ def login_json(
     )
     return {
         "access_token": create_access_token(
-            user.id, expires_delta=access_token_expires
+            user.id, expires_delta=access_token_expires, role=user.role
         ),
         "token_type": "bearer",
         "user": user,

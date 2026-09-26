@@ -161,3 +161,15 @@ All remaining production verification and deployment actions are intentionally d
 - [x] Live schema audit completed for attendance, rosters, staff, payroll, invoices and finance tables.
 - [x] Corrected payroll manual salary-hold persistence to use `salary_slip_holds`, matching the new payroll slip schema.
 - [ ] CI re-run for the latest salary-hold correction pending/expected from the new push.
+
+
+## Final GitHub / Deployment Readiness Gate — 2026-09-26
+- [x] Latest GitHub CI completed SUCCESS on current main commit `4a5201f1934c2928f4aa7b13a0ce108c99f8f185`.
+- [x] Backend compile/regression/import validation passed.
+- [x] Frontend lint/production build passed.
+- [x] Production Supabase Phase 4-5 schema migrations applied and verified.
+- [x] Payroll salary-hold schema mismatch corrected and CI passed after correction.
+- [x] Vercel project/deployment state audited without creating a deployment.
+- [!] Current Vercel READY production backend is still commit `d62c84ce...` (Phase 3); Phase 4-6 code is intentionally not deployed yet.
+- [ ] Authenticated end-to-end ERP functional checkpoint remains the only application-level validation requiring an authorized ERP session.
+- [ ] Vercel deployment is the next deployment action, not yet executed.

@@ -1,4 +1,4 @@
-from typing import Generator, List
+from typing import Generator, List, Iterable
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
@@ -73,8 +73,8 @@ def get_current_active_superuser(
 class RoleChecker:
     """Dependency for enforcing Role-Based Access Control (RBAC)."""
 
-    def __init__(self, allowed_roles: List[UserRole], allow_super_admin: bool = True):
-        self.allowed_roles = allowed_roles
+    def __init__(self, allowed_roles: Iterable[UserRole], allow_super_admin: bool = True):
+        self.allowed_roles = list(allowed_roles)
         self.allow_super_admin = allow_super_admin
 
     def __call__(
@@ -91,6 +91,23 @@ class RoleChecker:
         return current_user
 
 
+def require_roles(*roles: UserRole, allow_super_admin: bool = True) -> RoleChecker:
+    """Build a reusable dependency that permits one or more enterprise roles."""
+    return RoleChecker(list(roles), allow_super_admin=allow_super_admin)
+
+
+def get_current_owner(
+    current_user: User = Depends(get_current_active_user),
+) -> User:
+    """Require the highest-clearance OWNER role; SUPER_ADMIN is not sufficient."""
+    if current_user.role != UserRole.OWNER:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Owner clearance is required for this operation.",
+        )
+    return current_user
+
+
 # Pre-configured RBAC dependencies
 require_owner = RoleChecker([UserRole.OWNER], allow_super_admin=False)
 require_admin = RoleChecker([UserRole.OWNER, UserRole.SUPER_ADMIN, UserRole.ADMIN])
@@ -98,7 +115,7 @@ require_hr_or_admin = RoleChecker([UserRole.OWNER, UserRole.SUPER_ADMIN, UserRol
 require_ops_or_admin = RoleChecker([UserRole.OWNER, UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.OPERATIONS, UserRole.SUPERVISOR])
 require_accounts_or_admin = RoleChecker([UserRole.OWNER, UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTS])
 require_client = RoleChecker([UserRole.CLIENT])
-require_staff = RoleChecker([UserRole.STAFF])
+require_staff = RoleChecker([UserRole.STAFF], allow_super_admin=False)
 require_admin_or_client = RoleChecker([UserRole.OWNER, UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.CLIENT])
 require_admin_or_staff = RoleChecker([UserRole.OWNER, UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF])
 

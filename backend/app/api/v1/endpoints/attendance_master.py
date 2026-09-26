@@ -20,29 +20,6 @@ def list_attendance(db: Session = Depends(get_db), current_user=Depends(require_
     return [dict(r) for r in db.execute(text(q)).mappings().all()]
 
 
-def _staff_roster_scope(db: Session, roster_id: int, current_user):
-    row = db.execute(text("""select r.*,g.user_id,s.site_name,s.latitude,s.longitude,
-      coalesce(s.geofence_radius_meters,100) as geofence_radius_meters,e.id employee_id
-      from shift_rosters r join guard_profiles g on g.id=r.guard_id
-      join sites s on s.id=r.site_id join employees e on e.id=(
-        select sp.employee_id from staff_profiles sp where sp.employee_id=e.id limit 1)
-      where r.id=:id"""), {"id": roster_id}).mappings().first()
-    # The employee join above is intentionally followed by a direct employee lookup below;
-    # existing deployments can have guard profiles without a staff_profile row.
-    row = db.execute(text("""select r.*,g.user_id,s.site_name,s.latitude,s.longitude,
-      coalesce(s.geofence_radius_meters,100) as geofence_radius_meters,
-      gp.employee_id as employee_id
-      from shift_rosters r join guard_profiles g on g.id=r.guard_id
-      join sites s on s.id=r.site_id
-      left join (select distinct employee_id from staff_profiles) gp on gp.employee_id=(
-        select id from employees e where e.name=(select full_name from users u where u.id=g.user_id) limit 1)
-      where r.id=:id"""), {"id": roster_id}).mappings().first()
-    if not row:
-        raise HTTPException(404, "Roster not found")
-    if current_user.role.value == "STAFF" and row["user_id"] != current_user.id:
-        raise HTTPException(403, "Staff may only punch their own assigned roster")
-    return row
-
 
 @router.post("/punch")
 def punch_attendance(payload: dict, db: Session = Depends(get_db), current_user=Depends(require_admin_or_staff)):

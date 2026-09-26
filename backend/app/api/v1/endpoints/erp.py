@@ -4,34 +4,32 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.api.deps import require_admin, require_hr_or_admin, require_accounts_or_admin, require_owner
+from app.api.deps import require_admin, require_hr_or_admin, require_accounts_or_admin, require_owner, require_admin_or_staff
 from app.core.database import get_db
 
 router = APIRouter()
 
 @router.get("/summary")
-def erp_summary(db: Session = Depends(get_db), current_user=Depends(require_admin)):
-    """Owner/admin executive summary backed by the existing Supabase ERP tables."""
-    def scalar(sql: str):
-        return db.execute(text(sql)).scalar_one()
+def erp_summary(db: Session = Depends(get_db), current_user=Depends(require_admin_or_staff)):
+    def scalar(sql: str, params=None):
+        return db.execute(text(sql), params or {}).scalar_one()
+    month_start = date.today().replace(day=1)
+    next_month = (month_start.replace(day=28) + timedelta(days=4)).replace(day=1)
+    output_gst = scalar("select coalesce(sum(tax_amount), 0) from invoices where issue_date >= :month_start and issue_date < :next_month", {"month_start": month_start, "next_month": next_month})
+    input_itc = scalar("select coalesce(sum(gst_amount), 0) from gst_itc_ledger where created_at >= :month_start and created_at < :next_month and upper(coalesce(reconciliation_status, 'PENDING')) in ('RECONCILED','APPROVED')", {"month_start": month_start, "next_month": next_month})
+    pending_compliance = scalar("select count(*) from corporate_compliances where upper(coalesce(status, 'PENDING')) not in ('FILED','COMPLETED','COMPLIANT')")
+    reminders = [dict(r) for r in db.execute(text("""select id, compliance_type, period, due_date, status, 'Corporate compliance' as reminder_type from corporate_compliances where due_date is not null and due_date <= current_date + 30 and upper(coalesce(status, 'PENDING')) not in ('FILED','COMPLETED','COMPLIANT') order by due_date asc limit 8""")).mappings().all()]
+    reminders += [dict(r) for r in db.execute(text("""select d.id, d.document_type as compliance_type, e.name as employee_name, d.expiry_date as due_date, d.status, 'Employee document' as reminder_type from employee_documents d join employees e on e.id = d.employee_id where d.expiry_date is not null and d.expiry_date <= current_date + 30 and upper(coalesce(d.status, 'VALID')) not in ('EXPIRED','CANCELLED') order by d.expiry_date asc limit 8""")).mappings().all()]
+    reminders = sorted(reminders, key=lambda x: x.get("due_date") or date.max)[:10]
     return {
-        "employees": scalar("select count(*) from employees"),
-        "active_employees": scalar("select count(*) from employees where lower(status) = 'active'"),
-        "clients": scalar("select count(*) from clients"),
-        "active_sites": scalar("select count(*) from sites where is_active = true"),
-        "salary_records": scalar("select count(*) from salary_records"),
-        "pending_salary": scalar("select count(*) from salary_records where lifecycle_status in ('DRAFT','CALCULATED')"),
-        "open_salary_holds": scalar("select count(*) from salary_holds where status = 'HELD'"),
-        "open_risks": scalar("select count(*) from risk_flags where resolved = false"),
-        "unpaid_invoices": scalar("select count(*) from invoices where clearance_status <> 'PAID'"),
-        "rosters": scalar("select count(*) from shift_rosters"),
-        "attendance": scalar("select count(*) from attendance"),
-        "pending_attendance_verification": scalar("select count(*) from attendance where verification_status not in ('VERIFIED','APPROVED')"),
-        "employee_documents": scalar("select count(*) from employee_documents"),
-        "expiring_documents_60d": scalar("select count(*) from employee_documents where expiry_date is not null and expiry_date between current_date and current_date + 60"),
-        "expenses": scalar("select count(*) from expenses"),
-        "corporate_compliances": scalar("select count(*) from corporate_compliances"),
-        "overdue_compliances": scalar("select count(*) from corporate_compliances where due_date < current_date and status not in ('FILED','COMPLETED','COMPLIANT')"),
+        "month": month_start.strftime("%B %Y"),
+        "monthly_billing_pending": scalar("select coalesce(sum(total_amount), 0) from invoices where issue_date >= :month_start and issue_date < :next_month and upper(coalesce(clearance_status, 'PENDING')) <> 'PAID'", {"month_start": month_start, "next_month": next_month}),
+        "total_amount_received": scalar("select coalesce(sum(total_amount), 0) from invoices where issue_date >= :month_start and issue_date < :next_month and upper(coalesce(clearance_status, 'PENDING')) = 'PAID'", {"month_start": month_start, "next_month": next_month}),
+        "gst_collected": scalar("select coalesce(sum(tax_amount), 0) from invoices where issue_date >= :month_start and issue_date < :next_month and upper(coalesce(clearance_status, 'PENDING')) = 'PAID'", {"month_start": month_start, "next_month": next_month}),
+        "pending_to_collect": scalar("select coalesce(sum(total_amount), 0) from invoices where upper(coalesce(clearance_status, 'PENDING')) <> 'PAID'"),
+        "gst_to_be_paid": output_gst - input_itc,
+        "pending_compliance": pending_compliance,
+        "compliance_reminders": reminders,
     }
 
 @router.get("/employees")

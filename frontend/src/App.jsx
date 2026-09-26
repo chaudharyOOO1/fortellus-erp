@@ -20,6 +20,7 @@ import AttendanceView from './pages/AttendanceView';
 import InvoicesView from './pages/InvoicesView';
 import './App.css';
 import OwnerExecutiveView from './pages/OwnerExecutiveView';
+import PayrollView from './pages/PayrollView';
 
 const INTERNAL = ['OWNER','SUPER_ADMIN','ADMIN'];
 const HR_ROLES = [...INTERNAL, 'HR'];
@@ -46,7 +47,7 @@ function App() {
     <Route path="/rosters" element={<Protected allowedRoles={STAFF_ROLES}><Rosters /></Protected>} />
     <Route path="/attendance" element={<Protected allowedRoles={ATTENDANCE_ROLES}><Attendance /></Protected>} />
     <Route path="/billing" element={<Protected allowedRoles={[...ACCOUNTS_ROLES, 'CLIENT']}><InvoicesView /></Protected>} />
-    <Route path="/payroll" element={<Protected allowedRoles={[...ACCOUNTS_ROLES, 'HR']}><ControlCenter type="payroll" /></Protected>} />
+    <Route path="/payroll" element={<Protected allowedRoles={[...ACCOUNTS_ROLES, 'HR']}><PayrollView /></Protected>} />
     <Route path="/accounts" element={<Protected allowedRoles={ACCOUNTS_ROLES}><ControlCenter type="accounts" /></Protected>} />
     <Route path="/compliance" element={<Protected allowedRoles={[...HR_ROLES, 'ACCOUNTS']}><ControlCenter type="compliance" /></Protected>} />
     <Route path="/risks" element={<Protected allowedRoles={[...INTERNAL, 'HR', 'OPERATIONS', 'ACCOUNTS']}><ControlCenter type="risks" /></Protected>} />

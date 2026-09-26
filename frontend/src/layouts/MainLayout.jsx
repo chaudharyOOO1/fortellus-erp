@@ -20,7 +20,9 @@ import {
   WalletCards,
   Landmark,
   FileCheck2,
-  AlertTriangle
+  AlertTriangle,
+  Bell,
+  ChevronRight
 } from 'lucide-react';
 
 export default function MainLayout({ children, onQuickAction = null }) {
@@ -34,27 +36,33 @@ export default function MainLayout({ children, onQuickAction = null }) {
   const [currentTime, setCurrentTime] = useState('');
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const updateTime = () => {
       const now = new Date();
       setCurrentTime(
-        now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        now.toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })
       );
-    }, 1000);
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
     return () => clearInterval(timer);
   }, []);
 
   const role = user?.role || 'ADMIN';
 
-  // Full admin suite (OWNER, SUPER_ADMIN, ADMIN)
   const fullNavItems = [
-    { icon: LayoutDashboard, label: 'ERP Command Center', path: '/erp' },
+    { icon: LayoutDashboard, label: 'Command Center', path: '/erp' },
     { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
     { icon: Shield, label: 'Employees & HR', path: '/employees' },
     { icon: Users, label: 'Clients', path: '/clients' },
     { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
     { icon: Calendar, label: 'Rosters', path: '/rosters' },
     { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance' },
-    { icon: ReceiptText, label: 'Accounts & Billing', path: '/billing' },
+    { icon: ReceiptText, label: 'Invoices & Billing', path: '/billing' },
     { icon: WalletCards, label: 'Payroll', path: '/payroll' },
     { icon: Landmark, label: 'Accounts & GST', path: '/accounts' },
     { icon: FileCheck2, label: 'Compliance', path: '/compliance' },
@@ -65,14 +73,16 @@ export default function MainLayout({ children, onQuickAction = null }) {
 
   if (role === 'OWNER') {
     navItems = [
-      { icon: LayoutDashboard, label: 'ERP Command Center', path: '/erp' },
+      { icon: LayoutDashboard, label: 'Command Center', path: '/erp' },
       { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
       { icon: Shield, label: 'Employees & HR', path: '/employees' },
       { icon: Users, label: 'Clients', path: '/clients' },
       { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
       { icon: Calendar, label: 'Rosters', path: '/rosters' },
       { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance' },
-      { icon: ReceiptText, label: 'Accounts & Billing', path: '/billing' },
+      { icon: ReceiptText, label: 'Invoices & Billing', path: '/billing' },
+      { icon: WalletCards, label: 'Payroll', path: '/payroll' },
+      { icon: Landmark, label: 'Accounts & GST', path: '/accounts' },
     ];
   } else if (role === 'HR') {
     navItems = [
@@ -109,9 +119,8 @@ export default function MainLayout({ children, onQuickAction = null }) {
     ];
   }
 
-
   return (
-    <div className="min-h-screen bg-[#f5f7fb] text-slate-700 flex flex-col selection:bg-teal-500/20 selection:text-teal-700">
+    <div className="min-h-screen bg-[#f5f7fb] text-slate-700 flex flex-col">
       <CommandPalette
         isOpen={paletteOpen}
         onClose={() => setPaletteOpen(false)}
@@ -121,209 +130,175 @@ export default function MainLayout({ children, onQuickAction = null }) {
         }}
       />
 
-      <header className="h-16 cyber-panel border-b border-slate-800/80 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
-        <div className="flex items-center gap-3">
+      <header className="h-16 shrink-0 bg-white border-b border-slate-200 flex items-center sticky top-0 z-30 shadow-sm">
+        <div className="w-full px-4 lg:px-6 flex items-center gap-4">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+            className="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100"
+            aria-label="Open menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <div
+          <button
             onClick={() => navigate('/erp')}
-            className="flex items-center gap-2.5 cursor-pointer group select-none"
+            className="flex items-center gap-3 shrink-0 text-left"
           >
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(0,242,254,0.3)] transition-all">
+            <div className="w-9 h-9 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-700">
               <Shield className="w-5 h-5" />
             </div>
-            <div>
-              <span className="text-base font-extrabold text-white tracking-wider flex items-center gap-1.5">
-                FORTELLUS <span className="text-teal-700 font-mono text-sm font-semibold">ERP</span>
-              </span>
-              <p className="text-[10px] text-slate-500 font-mono hidden sm:block">SECURITY • FACILITY • WORKFORCE MANAGEMENT</p>
-            </div>
-
-          </div>
-        </div>
-
-        <div className="flex-1 max-w-md mx-6 hidden md:block">
-          <button
-            onClick={() => setPaletteOpen(true)}
-            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl cyber-panel border border-slate-800 hover:border-cyan-500/40 text-slate-400 text-xs transition-all group"
-          >
-            <div className="flex items-center gap-2">
-              <Search className="w-4 h-4 text-cyan-400/80 group-hover:text-cyan-400" />
-              <span>Search employees, clients, sites, invoices...</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-400">
-                Ctrl K
-              </span>
+            <div className="hidden sm:block leading-tight">
+              <div className="flex items-baseline gap-2">
+                <span className="text-[15px] font-extrabold tracking-tight text-slate-900">NORTHLANE</span>
+                <span className="text-[15px] font-extrabold tracking-tight text-teal-700">ALLIED SERVICES</span>
+              </div>
+              <p className="text-[9px] font-semibold tracking-[0.16em] text-slate-400 uppercase mt-0.5">Enterprise Resource Planning</p>
             </div>
           </button>
-        </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden lg:flex items-center gap-3 px-3 py-1.5 rounded-xl bg-slate-900/60 border border-slate-800">
-            <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            <span className="font-mono text-xs text-cyan-400 font-semibold tracking-wider">
-              {currentTime || '06:30:00'} UTC+5:30
-            </span>
-          </div>
-
-          <div
-            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
-              apiConnected
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30'
-            }`}
-            title={apiConnected ? 'Connected to live FastAPI backend' : 'Running in resilient offline demo mode'}
-          >
-            <span className={`w-1.5 h-1.5 rounded-full ${apiConnected ? 'bg-emerald-400' : 'bg-cyan-400'} animate-pulse`} />
-            <span>{apiConnected ? 'LIVE' : 'OFFLINE'}</span>
-          </div>
-
-          <div className="relative">
+          <div className="flex-1 max-w-xl mx-auto hidden md:block">
             <button
-              onClick={() => setPersonaMenuOpen(!personaMenuOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl cyber-panel border border-slate-800 hover:border-cyan-500/40 text-left transition-all"
+              onClick={() => setPaletteOpen(true)}
+              className="w-full h-10 flex items-center justify-between px-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-teal-300 hover:bg-white text-slate-500 text-sm transition-colors"
             >
-              <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${
-                role === 'OWNER'
-                  ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300'
-                  : role === 'CLIENT'
-                  ? 'bg-purple-500/20 border border-purple-500/40 text-purple-300'
-                  : role === 'STAFF'
-                  ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
-                  : role === 'HR'
-                  ? 'bg-rose-500/20 border border-rose-500/40 text-rose-300'
-                  : role === 'ACCOUNTS'
-                  ? 'bg-violet-500/20 border border-violet-500/40 text-violet-300'
-                  : 'bg-cyan-500/20 border border-cyan-500/40 text-cyan-300'
-              }`}>
-                {user?.full_name?.charAt(0) || 'U'}
-              </div>
-              <div className="hidden md:block">
-                <p className="text-xs font-bold text-white leading-none">{user?.full_name?.split(' ')[0] || 'Admin'}</p>
-                <span className={`text-[9px] font-mono uppercase tracking-wider font-semibold ${
-                  role === 'OWNER' ? 'text-amber-400'
-                  : role === 'CLIENT' ? 'text-purple-400'
-                  : role === 'STAFF' ? 'text-emerald-400'
-                  : role === 'HR' ? 'text-rose-400'
-                  : role === 'ACCOUNTS' ? 'text-violet-400'
-                  : 'text-cyan-400'
-                }`}>
-                  {role}
-                </span>
-              </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <span className="flex items-center gap-2">
+                <Search className="w-4 h-4 text-slate-400" />
+                Search employees, clients, sites, invoices...
+              </span>
+              <span className="text-[11px] font-medium px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-400">Ctrl K</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 lg:gap-3 ml-auto">
+            <div className="hidden xl:flex items-center gap-2 text-xs text-slate-500 px-2">
+              <Radio className={`w-3.5 h-3.5 ${apiConnected ? 'text-emerald-500' : 'text-slate-400'}`} />
+              <span>{currentTime || '00:00:00'} IST</span>
+            </div>
+
+            <div
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold border ${apiConnected
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                : 'bg-amber-50 text-amber-700 border-amber-100'}`}
+              title={apiConnected ? 'Connected to live FastAPI backend' : 'Running in offline demo mode'}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${apiConnected ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+              {apiConnected ? 'LIVE' : 'OFFLINE'}
+            </div>
+
+            <button className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50">
+              <Bell className="w-4 h-4" />
             </button>
 
-            {personaMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-60 cyber-panel-glow rounded-2xl border border-cyan-500/30 p-2 shadow-2xl z-40">
-                <p className="text-[10px] text-slate-400 uppercase font-mono px-3 py-1">Quick Role Switcher</p>
+            <div className="relative">
+              <button
+                onClick={() => setPersonaMenuOpen(!personaMenuOpen)}
+                className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-700 font-bold text-xs">
+                  {user?.full_name?.charAt(0) || 'A'}
+                </div>
+                <div className="hidden lg:block text-left">
+                  <p className="text-xs font-semibold text-slate-800 leading-tight">{user?.full_name?.split(' ')[0] || 'Admin'}</p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">{role}</p>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              </button>
 
-                {[
-                  { role: 'OWNER', label: 'Owner / CEO', color: 'text-amber-400' },
-                  { role: 'SUPER_ADMIN', label: 'Super Admin', color: 'text-cyan-400' },
-                  { role: 'HR', label: 'HR Manager', color: 'text-rose-400' },
-                  { role: 'OPERATIONS', label: 'Operations Mgr', color: 'text-sky-400' },
-                  { role: 'ACCOUNTS', label: 'Accounts Mgr', color: 'text-violet-400' },
-                  { role: 'CLIENT', label: 'Client Portal', color: 'text-purple-400' },
-                  { role: 'STAFF', label: 'Field Guard', color: 'text-emerald-400' },
-                ].map(({ role: r, label, color }) => (
+              {personaMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl border border-slate-200 p-2 shadow-xl z-40">
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider px-3 py-2">Switch Role</p>
+                  {[
+                    { role: 'OWNER', label: 'Owner / CEO' },
+                    { role: 'SUPER_ADMIN', label: 'Super Admin' },
+                    { role: 'HR', label: 'HR Manager' },
+                    { role: 'OPERATIONS', label: 'Operations Manager' },
+                    { role: 'ACCOUNTS', label: 'Accounts Manager' },
+                    { role: 'CLIENT', label: 'Client Portal' },
+                    { role: 'STAFF', label: 'Field Staff' },
+                  ].map(({ role: r, label }) => (
+                    <button
+                      key={r}
+                      onClick={() => { switchPersona(r); setPersonaMenuOpen(false); }}
+                      className={`w-full text-left px-3 py-2 text-xs rounded-lg flex items-center justify-between ${user?.role === r ? 'bg-teal-50 text-teal-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'}`}
+                    >
+                      <span>{label}</span>
+                      <span className="text-[10px] text-slate-400">{r}</span>
+                    </button>
+                  ))}
+                  <div className="h-px bg-slate-100 my-2" />
                   <button
-                    key={r}
-                    onClick={() => { switchPersona(r); setPersonaMenuOpen(false); }}
-                    className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center justify-between ${
-                      user?.role === r ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'text-slate-300 hover:bg-slate-800'
-                    }`}
+                    onClick={() => { logout(); navigate('/login'); }}
+                    className="w-full text-left px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 rounded-lg flex items-center gap-2"
                   >
-                    <span>{label}</span>
-                    <span className={`text-[10px] font-mono bg-slate-900 px-1.5 py-0.5 rounded ${color}`}>{r}</span>
+                    <LogOut className="w-3.5 h-3.5" />
+                    Sign Out
                   </button>
-                ))}
-
-                <div className="h-px bg-slate-800 my-1.5" />
-
-                <button
-                  onClick={() => { logout(); navigate('/login'); }}
-                  className="w-full text-left px-3 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors flex items-center gap-2"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
 
+      <div className="flex flex-1 min-h-0">
+        <aside className="hidden md:flex w-64 shrink-0 bg-white border-r border-slate-200 flex-col">
+          <div className="px-4 pt-5 pb-3">
+            <p className="text-[10px] text-slate-400 uppercase tracking-[0.16em] font-bold px-2">Workspace</p>
+          </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        <aside className="w-64 cyber-panel border-r border-slate-800/80 hidden md:flex flex-col p-4 space-y-1.5">
-          <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono font-bold px-3 mb-2">
-            ERP Modules
-          </p>
+          <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                    ? 'bg-teal-50 text-teal-700 border border-teal-100'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                >
+                  <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-teal-700' : 'text-slate-400'}`} />
+                  <span className="truncate">{item.label}</span>
+                  {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto shrink-0" />}
+                </button>
+              );
+            })}
+          </nav>
 
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
-                  isActive
-                    ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-[0_0_15px_rgba(0,242,254,0.1)]'
-                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-500 group-hover:text-cyan-400'} transition-colors`} />
-                  <span>{item.label}</span>
-                </div>
-                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />}
-              </button>
-            );
-          })}
-
-          <div className="mt-auto pt-4 border-t border-slate-800/80 space-y-3">
-            <div className="p-3.5 rounded-xl cyber-card border border-slate-800 bg-slate-950/40">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-300">
-                <span className="flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>System Health</span>
-                </span>
-                <span className="text-[10px] font-mono text-emerald-400">99.9%</span>
+          <div className="p-3 border-t border-slate-200">
+            <div className="rounded-xl bg-slate-50 border border-slate-200 p-3">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+                <span className="flex items-center gap-2"><Zap className="w-3.5 h-3.5 text-teal-600" />System Health</span>
+                <span className="text-emerald-600">99.9%</span>
               </div>
-              <div className="w-full h-1 bg-slate-800 rounded-full mt-2 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-r from-cyan-500 to-emerald-400 animate-pulse" />
+              <div className="w-full h-1.5 bg-slate-200 rounded-full mt-2 overflow-hidden">
+                <div className="w-[99.9%] h-full bg-teal-600 rounded-full" />
               </div>
             </div>
+            <p className="text-[10px] text-slate-400 px-1 mt-2">Northlane Allied Services ERP</p>
           </div>
         </aside>
 
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-x-0 top-16 cyber-panel-glow border-b border-cyan-500/30 p-4 z-40 space-y-1">
-            {navItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold ${
-                  location.pathname === item.path ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-300'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </button>
-            ))}
+          <div className="md:hidden fixed inset-x-0 top-16 bottom-0 bg-white z-40 p-4 overflow-y-auto">
+            <nav className="space-y-1">
+              {navItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium ${location.pathname === item.path ? 'bg-teal-50 text-teal-700' : 'text-slate-600 hover:bg-slate-50'}`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#060913]/60">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 min-w-0 overflow-y-auto bg-[#f5f7fb]">
+          <div className="max-w-[1440px] mx-auto p-4 sm:p-6 lg:p-8">
             {children}
           </div>
         </main>

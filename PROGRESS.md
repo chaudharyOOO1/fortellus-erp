@@ -154,3 +154,10 @@ All remaining production verification and deployment actions are intentionally d
 - [x] Supabase security advisor reviewed; new payroll tables have deny policies. Existing INFO findings remain on pre-existing `attendances` and `users` RLS policy coverage.
 - [ ] Authenticated end-to-end Phase 4-6 test still requires a valid authorized ERP account/session.
 - [ ] Vercel deployment remains deferred until GitHub validation is complete.
+
+
+## CI / Schema Audit — 2026-09-26
+- [x] GitHub Actions ERP CI passed on main commit `130edf957530eb7d7956c96eb76fd3e6cd64042c`: backend and frontend jobs both SUCCESS.
+- [x] Live schema audit completed for attendance, rosters, staff, payroll, invoices and finance tables.
+- [x] Corrected payroll manual salary-hold persistence to use `salary_slip_holds`, matching the new payroll slip schema.
+- [ ] CI re-run for the latest salary-hold correction pending/expected from the new push.

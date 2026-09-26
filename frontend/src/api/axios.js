@@ -1,18 +1,16 @@
 import axios from 'axios';
 
 // Resolve base API URL:
-// 1. If VITE_API_BASE_URL is explicitly configured, use it (ensuring it points to /api/v1).
-// 2. In local development without env var, default to http://localhost:8000/api/v1.
-// 3. In production without env var, use relative /api/v1 to prevent Mixed Content HTTP/HTTPS browser blocks.
+// 1. If VITE_API_BASE_URL is explicitly configured (set in Vercel project settings), use it.
+// 2. Otherwise default to the known-good backend deployment.
+// 3. In local development without env var, use http://localhost:8000/api/v1.
 const envApiUrl = import.meta.env.VITE_API_BASE_URL;
 
-// Production must always use the public FastAPI backend. This avoids a stale
-// Vercel environment variable pointing the browser at the wrong deployment.
 let API_BASE_URL = import.meta.env.PROD
-  ? 'https://backend-fortellus.vercel.app/api/v1'
+  ? 'https://backend-psi-lovat-86.vercel.app/api/v1'
   : 'http://localhost:8000/api/v1';
 
-if (envApiUrl && !import.meta.env.PROD) {
+if (envApiUrl) {
   API_BASE_URL = envApiUrl.endsWith('/api/v1')
     ? envApiUrl
     : `${envApiUrl.replace(/\/$/, '')}/api/v1`;

@@ -21,6 +21,8 @@ import InvoicesView from './pages/InvoicesView';
 import './App.css';
 import OwnerExecutiveView from './pages/OwnerExecutiveView';
 import PayrollView from './pages/PayrollView';
+import AccountSettings from './pages/AccountSettings';
+import UserManagement from './pages/UserManagement';
 
 const INTERNAL = ['OWNER','SUPER_ADMIN','ADMIN'];
 const HR_ROLES = [...INTERNAL, 'HR'];
@@ -32,7 +34,7 @@ const ATTENDANCE_ROLES = [...HR_ROLES, 'OPERATIONS', 'SUPERVISOR', 'CLIENT', 'ST
 
 
 function RootRedirect() { const { isAuthenticated } = useAuth(); return <Navigate to={isAuthenticated ? '/erp' : '/login'} replace />; }
-function Protected({ children, allowedRoles }) { return <ProtectedRoute allowedRoles={allowedRoles}>{children}</ProtectedRoute>; }
+function Protected({ children, allowedRoles, permission }) { return <ProtectedRoute allowedRoles={allowedRoles} permission={permission}>{children}</ProtectedRoute>; }
 
 function App() {
   return <Router><AuthProvider><Routes>
@@ -52,6 +54,8 @@ function App() {
     <Route path="/compliance" element={<Protected allowedRoles={[...HR_ROLES, 'ACCOUNTS']}><ControlCenter type="compliance" /></Protected>} />
     <Route path="/risks" element={<Protected allowedRoles={[...INTERNAL, 'HR', 'OPERATIONS', 'ACCOUNTS']}><ControlCenter type="risks" /></Protected>} />
     <Route path="/owner-executive" element={<Protected allowedRoles={['OWNER']}><OwnerExecutiveView /></Protected>} />
+    <Route path="/users" element={<Protected permission="user_management.view"><UserManagement /></Protected>} />
+    <Route path="/account" element={<Protected><AccountSettings /></Protected>} />
     <Route path="/" element={<RootRedirect />} /><Route path="*" element={<RootRedirect />} />
   </Routes></AuthProvider></Router>;
 }

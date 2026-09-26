@@ -161,25 +161,10 @@ export default function MainLayout({ children, onQuickAction = null }) {
 
               {personaMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl border border-slate-200 p-2 shadow-xl z-40">
-                  <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider px-3 py-2">Switch Role</p>
-                  {[
-                    { role: 'OWNER', label: 'Owner / CEO' },
-                    { role: 'SUPER_ADMIN', label: 'Super Admin' },
-                    { role: 'HR', label: 'HR Manager' },
-                    { role: 'OPERATIONS', label: 'Operations Manager' },
-                    { role: 'ACCOUNTS', label: 'Accounts Manager' },
-                    { role: 'CLIENT', label: 'Client Portal' },
-                    { role: 'STAFF', label: 'Employee' },
-                  ].map(({ role: r, label }) => (
-                    <button
-                      key={r}
-                      onClick={() => { switchPersona(r); setPersonaMenuOpen(false); }}
-                      className={`w-full text-left px-3 py-2 text-xs rounded-lg flex items-center justify-between ${user?.role === r ? 'bg-teal-50 text-teal-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'}`}
-                    >
-                      <span>{label}</span>
-                      <span className="text-[10px] text-slate-400">{r}</span>
-                    </button>
-                  ))}
+                  <div className="px-3 py-2.5 rounded-lg bg-slate-50 border border-slate-100 mb-1">
+                    <p className="text-xs font-semibold text-slate-800">{user?.full_name || 'Account'}</p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">{role}</p>
+                  </div>
                   <div className="h-px bg-slate-100 my-2" />
                   <button
                     onClick={() => { logout(); navigate('/login'); }}

@@ -57,6 +57,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
   const fullNavItems = [
     { icon: LayoutDashboard, label: 'Command Center', path: '/erp' },
     { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
+      { icon: Landmark, label: 'Owner Executive', path: '/owner-executive', ownerOnly: true },
     { icon: Shield, label: 'Employees & HR', path: '/employees' },
     { icon: Users, label: 'Clients', path: '/clients' },
     { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
@@ -151,10 +152,10 @@ export default function MainLayout({ children, onQuickAction = null }) {
             </div>
             <div className="hidden sm:block leading-tight">
               <div className="flex items-baseline gap-2">
-                <span className="text-[15px] font-extrabold tracking-tight text-slate-900">NORTHLANE</span>
-                <span className="text-[15px] font-extrabold tracking-tight text-teal-700">ALLIED SERVICES</span>
+                <span className="text-[15px] font-extrabold tracking-tight text-slate-900">FORTELLUS</span>
+                <span className="text-[15px] font-extrabold tracking-tight text-teal-700">ENTERPRISE ERP</span>
               </div>
-              <p className="text-[9px] font-semibold tracking-[0.16em] text-slate-400 uppercase mt-0.5">Enterprise Resource Planning</p>
+              <p className="text-[9px] font-semibold tracking-[0.16em] text-slate-400 uppercase mt-0.5">Security & Facility Management ERP</p>
             </div>
           </button>
 
@@ -249,7 +250,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
           </div>
 
           <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
-            {navItems.map((item) => {
+            {navItems.filter((item) => !item.ownerOnly || role === 'OWNER').map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
               return (
@@ -278,7 +279,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
                 <div className="w-[99.9%] h-full bg-teal-600 rounded-full" />
               </div>
             </div>
-            <p className="text-[10px] text-slate-400 px-1 mt-2">Northlane Allied Services ERP</p>
+            <p className="text-[10px] text-slate-400 px-1 mt-2">Fortellus Security & Facility Management ERP</p>
           </div>
         </aside>
 

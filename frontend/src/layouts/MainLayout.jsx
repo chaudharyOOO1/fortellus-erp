@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function MainLayout({ children, onQuickAction = null }) {
-  const { user, logout, switchPersona, apiConnected } = useAuth();
+  const { user, logout, apiConnected, can } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -52,76 +52,27 @@ export default function MainLayout({ children, onQuickAction = null }) {
     return () => clearInterval(timer);
   }, []);
 
-  const role = user?.role || 'ADMIN';
+  const role = user?.role || 'STAFF';
 
   const fullNavItems = [
-    { icon: LayoutDashboard, label: 'Command Center', path: '/erp' },
-    { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
-      { icon: Landmark, label: 'Owner Executive', path: '/owner-executive', ownerOnly: true },
-    { icon: Shield, label: 'Employees & HR', path: '/employees' },
-    { icon: Users, label: 'Clients', path: '/clients' },
-    { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
-    { icon: Calendar, label: 'Rosters', path: '/rosters' },
-    { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance' },
-    { icon: ReceiptText, label: 'Invoices & Billing', path: '/billing' },
-    { icon: WalletCards, label: 'Payroll', path: '/payroll' },
-    { icon: Landmark, label: 'Accounts & GST', path: '/accounts' },
-    { icon: FileCheck2, label: 'Compliance', path: '/compliance' },
-    { icon: AlertTriangle, label: 'Risk Controls', path: '/risks' },
+    { icon: LayoutDashboard, label: 'Command Center', path: '/erp', permission: 'dashboard.view' },
+    { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard', permission: 'dashboard.view' },
+    { icon: Landmark, label: 'Owner Executive', path: '/owner-executive', permission: 'owner.view' },
+    { icon: Shield, label: 'Employees & HR', path: '/employees', permission: 'employees.view' },
+    { icon: Users, label: 'Clients', path: '/clients', permission: 'clients.view' },
+    { icon: MapPin, label: 'Sites & Deployment', path: '/sites', permission: 'sites.view' },
+    { icon: Calendar, label: 'Rosters', path: '/rosters', permission: 'rosters.view' },
+    { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance', permission: 'attendance.view' },
+    { icon: ReceiptText, label: 'Invoices & Billing', path: '/billing', permission: 'billing.view' },
+    { icon: WalletCards, label: 'Payroll', path: '/payroll', permission: 'payroll.view' },
+    { icon: Landmark, label: 'Accounts & GST', path: '/accounts', permission: 'finance.view' },
+    { icon: FileCheck2, label: 'Compliance', path: '/compliance', permission: 'compliance.view' },
+    { icon: AlertTriangle, label: 'Risk Controls', path: '/risks', permission: 'risks.view' },
+    { icon: Users, label: 'User Management', path: '/users', permission: 'user_management.view' },
+    { icon: Shield, label: 'My Account', path: '/account', permission: null },
   ];
 
-  let navItems = fullNavItems;
-
-  if (role === 'OWNER') {
-    navItems = [
-      { icon: LayoutDashboard, label: 'Command Center', path: '/erp' },
-      { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
-      { icon: Landmark, label: 'Owner Executive', path: '/owner-executive', ownerOnly: true },
-      { icon: Shield, label: 'Employees & HR', path: '/employees' },
-      { icon: Users, label: 'Clients', path: '/clients' },
-      { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
-      { icon: Calendar, label: 'Rosters', path: '/rosters' },
-      { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance' },
-      { icon: ReceiptText, label: 'Invoices & Billing', path: '/billing' },
-      { icon: WalletCards, label: 'Payroll', path: '/payroll' },
-      { icon: Landmark, label: 'Accounts & GST', path: '/accounts' },
-    ];
-  } else if (role === 'HR') {
-    navItems = [
-      { icon: LayoutDashboard, label: 'HR Dashboard', path: '/dashboard' },
-      { icon: Shield, label: 'Staff Personnel', path: '/employees' },
-      { icon: ClipboardList, label: 'Attendance Records', path: '/attendance' },
-    ];
-  } else if (role === 'OPERATIONS' || role === 'SUPERVISOR') {
-    navItems = [
-      { icon: LayoutDashboard, label: 'Ops Dashboard', path: '/dashboard' },
-      { icon: MapPin, label: 'Deployment Sites', path: '/sites' },
-      { icon: Calendar, label: 'Duty Rosters', path: '/rosters' },
-      { icon: ClipboardList, label: 'Attendance & OT', path: '/attendance' },
-    ];
-  } else if (role === 'ACCOUNTS') {
-    navItems = [
-      { icon: LayoutDashboard, label: 'Accounts Dashboard', path: '/dashboard' },
-      { icon: Users, label: 'Client Accounts', path: '/clients' },
-      { icon: ReceiptText, label: 'Billing / Invoices', path: '/billing' },
-    ];
-  } else if (role === 'CLIENT') {
-    navItems = [
-      { icon: LayoutDashboard, label: 'Facility Overview', path: '/dashboard' },
-      { icon: MapPin, label: 'My Facilities', path: '/sites' },
-      { icon: Calendar, label: 'Shift Rosters', path: '/rosters' },
-      { icon: ClipboardList, label: 'Guard Attendance', path: '/attendance' },
-      { icon: ReceiptText, label: 'Invoices & Statements', path: '/billing' },
-    ];
-  } else if (role === 'STAFF') {
-    navItems = [
-      { icon: LayoutDashboard, label: 'Employee Dashboard', path: '/dashboard' },
-      { icon: Users, label: 'Client Accounts', path: '/clients' },
-      { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
-      { icon: Calendar, label: 'My Duty Schedule', path: '/rosters' },
-      { icon: ClipboardList, label: 'My Attendance & OT', path: '/attendance' },
-    ];
-  }
+  const navItems = fullNavItems.filter((item) => !item.permission || can(item.permission));
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-700 flex flex-col">

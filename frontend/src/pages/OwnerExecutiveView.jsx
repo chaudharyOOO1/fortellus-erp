@@ -1,19 +1,18 @@
-import { ShieldCheck } from 'lucide-react';
-
+import { useEffect, useState } from 'react';
+import MainLayout from '../layouts/MainLayout';
+import api from '../api/axios';
+import { AlertTriangle, RefreshCw, TrendingUp, Wallet, ReceiptText, ShieldCheck } from 'lucide-react';
+const money = (v) => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(v || 0);
 export default function OwnerExecutiveView() {
-  return (
-    <section className="space-y-6">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-600">Owner clearance</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Executive Command Center</h1>
-        <p className="mt-2 text-sm text-slate-500">The production P&amp;L, balance sheet and risk radar will be activated in Phase 6.</p>
-      </div>
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-700"><ShieldCheck className="h-5 w-5" /></div>
-          <div><h2 className="font-semibold text-slate-900">Owner-only workspace is protected</h2><p className="text-sm text-slate-500 mt-1">Only the OWNER role can open this route.</p></div>
-        </div>
-      </div>
-    </section>
-  );
+ const [data,setData]=useState(null); const [error,setError]=useState('');
+ const load=async()=>{try{setError('');setData((await api.get('/owner/executive-summary')).data)}catch(e){setError(e.response?.data?.detail||'Unable to load executive command center')}};
+ useEffect(()=>{load()},[]); const k=data?.kpis||{};
+ return <MainLayout><div className='space-y-6'>
+  <div className='flex items-center justify-between'><div><p className='text-xs font-semibold uppercase tracking-[0.16em] text-teal-600'>OWNER CLEARANCE</p><h1 className='mt-2 text-3xl font-black text-slate-900'>Executive Command Center</h1><p className='mt-1 text-sm text-slate-500'>Real-time P&amp;L, operational margin, receivables and risk radar.</p></div><button onClick={load} className='p-2 rounded-xl border border-slate-200 bg-white'><RefreshCw className='w-4 h-4'/></button></div>
+  {error&&<div className='p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs'>{error}</div>}
+  <div className='grid md:grid-cols-3 lg:grid-cols-6 gap-3'>{[['Revenue',k.revenue,TrendingUp],['Expenses',k.expenses,Wallet],['Payroll',k.payroll,ReceiptText],['Statutory',k.statutory_liabilities,ShieldCheck],['Net Profit',k.net_profit,TrendingUp],['Net Margin',(k.net_margin_percent||0)+'%',TrendingUp]].map(([label,val,Icon])=><div key={label} className='bg-white border border-slate-200 rounded-2xl p-4 shadow-sm'><Icon className='w-4 h-4 text-teal-600'/><p className='text-[10px] uppercase tracking-wider text-slate-400 mt-3'>{label}</p><b className='text-lg text-slate-900'>{typeof val==='string'?val:money(val)}</b></div>)}</div>
+  <div className='grid lg:grid-cols-2 gap-5'>
+   <div className='bg-white border border-slate-200 rounded-2xl p-5 shadow-sm'><h2 className='font-bold text-slate-900 mb-4'>Dynamic P&amp;L by Client</h2>{(data?.p_and_l||[]).map(x=><div key={x.id} className='py-3 border-t border-slate-100 flex justify-between text-xs'><div><b>{x.company_name}</b><p className='text-slate-400'>Revenue {money(x.revenue)} · Payroll {money(x.payroll)} · Expenses {money(x.expenses)}</p></div><span className='font-bold text-teal-700'>{money(Number(x.revenue)-Number(x.payroll)-Number(x.expenses))}</span></div>)}{!data?.p_and_l?.length&&<p className='text-xs text-slate-400'>No financial records yet.</p>}</div>
+   <div className='bg-white border border-slate-200 rounded-2xl p-5 shadow-sm'><div className='flex items-center gap-2 mb-4'><AlertTriangle className='w-4 h-4 text-amber-600'/><h2 className='font-bold text-slate-900'>Risk Radar</h2><span className='ml-auto text-xs font-bold'>{data?.risk_count||0} flags</span></div>{(data?.risks||[]).map((r,i)=><div key={i} className='py-3 border-t border-slate-100'><div className='flex justify-between text-xs'><b>{r.type}</b><span className={r.severity==='HIGH'?'text-red-600':'text-amber-600'}>{r.severity}</span></div><p className='text-xs text-slate-500 mt-1'>{r.message}</p></div>)}{!data?.risks?.length&&<p className='text-xs text-emerald-600'>No active computed risk flags.</p>}</div>
+  </div></div></MainLayout>;
 }

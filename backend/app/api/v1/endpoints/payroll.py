@@ -125,7 +125,7 @@ def hold_salary(slip_id: int, payload: dict, db: Session = Depends(get_db), curr
     row = db.execute(text("""update salary_slips set lifecycle_status='HELD',hold_reason=:reason,updated_at=now()
       where id=:id returning *"""), {"id":slip_id,"reason":reason}).mappings().first()
     if not row: raise HTTPException(404, "Salary slip not found")
-    db.execute(text("""insert into salary_holds(salary_slip_id,reason,audit_note,created_by)
+    db.execute(text("""insert into salary_slip_holds(salary_slip_id,reason,audit_note,created_by)
       values(:slip,:reason,:note,:user)"""), {"slip":slip_id,"reason":reason,"note":audit_note,"user":current_user.id})
     db.commit()
     return dict(row)

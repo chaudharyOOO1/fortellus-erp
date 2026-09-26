@@ -53,7 +53,7 @@ def shortfall_analysis(
                 and g.status::text='ACTIVE' and coalesce(sp.is_bench_locked,false)=false"""),
               {"site_id":site["id"],"d":target,"shift":shift}).scalar() or 0)
             gs=(1-(active/required)) if required else 0
-            candidates=db.execute(text("""select g.id guard_id,e.employee_id,e.name,e.employee_code,
+            candidates=db.execute(text("""select g.id guard_id,e.id employee_id,e.name,e.employee_code,
               sp.vertical,sp.category
               from guard_profiles g join employees e on e.id=g.employee_id
               left join staff_profiles sp on sp.employee_id=g.employee_id

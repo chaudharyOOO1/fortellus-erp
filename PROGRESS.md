@@ -92,3 +92,4 @@ STOP & HANDOVER CHECKPOINT 3 remains pending until the production build is READY
 
 ## Deployment trigger
 - [x] Phase 3 source consolidated on main; this commit triggers the consolidated Vercel production build.
+- [x] Manual redeploy trigger requested after verifying the previous production deployment remained on commit d62c84ce.

@@ -32,8 +32,6 @@ export default function MainLayout({ children, onQuickAction = null }) {
 
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [personaMenuOpen, setPersonaMenuOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState('');
 
   useEffect(() => {
     const updateTime = () => {
@@ -56,7 +54,6 @@ export default function MainLayout({ children, onQuickAction = null }) {
 
   const fullNavItems = [
     { icon: LayoutDashboard, label: 'Command Center', path: '/erp', permission: 'dashboard.view' },
-    { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard', permission: 'dashboard.view' },
     { icon: Landmark, label: 'Owner Executive', path: '/owner-executive', permission: 'owner.view' },
     { icon: Shield, label: 'Employees & HR', path: '/employees', permission: 'employees.view' },
     { icon: Users, label: 'Clients', path: '/clients', permission: 'clients.view' },

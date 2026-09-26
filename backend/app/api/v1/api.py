@@ -9,6 +9,7 @@ api_router.include_router(employees.router,prefix="/erp/employees",tags=["Employ
 api_router.include_router(recruitment.router,prefix="/erp/recruitment",tags=["Recruitment Pipeline"])
 api_router.include_router(staff.router,prefix="/erp/staff",tags=["Staff Master"])
 api_router.include_router(client_master.router,prefix="/erp/clients",tags=["Client Master"])
+api_router.include_router(contract_master.router,prefix="/erp/contracts",tags=["Contract & Rate Master"])
 api_router.include_router(site_master.router,prefix="/erp/sites",tags=["Site Master"])
 api_router.include_router(control_center.router,prefix="/erp",tags=["ERP Controls"])
 api_router.include_router(roster_master.router,prefix="/erp/rosters",tags=["Roster Master"])

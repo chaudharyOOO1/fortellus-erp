@@ -111,3 +111,53 @@
   to { transform: translateX(0); }
 }
 .drawer-enter { animation: drawer-slide-in .3s cubic-bezier(.16,1,.3,1) forwards; }
+
+
+/* Fortellus ERP — enterprise light UI refresh */
+:root {
+  --fortellus-accent: #0f766e;
+  --fortellus-accent-dark: #115e59;
+  --fortellus-indigo: #4f46e5;
+  --fortellus-bg: #f5f7fb;
+  --fortellus-surface: #ffffff;
+  --fortellus-border: #e2e8f0;
+  --fortellus-muted: #64748b;
+}
+
+[class*="bg-[#060913]"] {
+  background: var(--fortellus-bg) !important;
+}
+[class*="bg-[#060913]/60"] {
+  background: rgba(245,247,251,.72) !important;
+}
+.text-cyan-400, .text-cyan-300, .text-cyan-200 {
+  color: var(--fortellus-accent) !important;
+}
+.border-cyan-500\/30, .border-cyan-500\/40, .border-cyan-500\/20 {
+  border-color: rgba(15,118,110,.22) !important;
+}
+.bg-cyan-500\/10, .bg-cyan-500\/15, .bg-cyan-500\/20 {
+  background-color: rgba(15,118,110,.08) !important;
+}
+.hover\:border-cyan-500\/40:hover {
+  border-color: rgba(15,118,110,.32) !important;
+}
+.shadow-\[0_0_15px_rgba\(0\,242\,254\,0\.3\)\],
+.shadow-\[0_0_15px_rgba\(0\,242\,254\,0\.1\)\] {
+  box-shadow: 0 8px 24px rgba(15,23,42,.08) !important;
+}
+.cyber-panel {
+  border-color: var(--fortellus-border);
+  box-shadow: 0 4px 20px rgba(15,23,42,.045);
+}
+.cyber-card:hover {
+  transform: translateY(-1px);
+}
+main > .max-w-7xl {
+  max-width: 1440px;
+}
+@media (min-width: 768px) {
+  aside.w-64 {
+    width: 240px !important;
+  }
+}

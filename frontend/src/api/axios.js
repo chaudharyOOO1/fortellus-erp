@@ -2,12 +2,15 @@ import axios from 'axios';
 
 // Resolve base API URL:
 // 1. If VITE_API_BASE_URL is explicitly configured (set in Vercel project settings), use it.
-// 2. Otherwise default to the known-good backend deployment.
+// 2. Otherwise, in production, use a relative path (same-origin backend, see root vercel.json).
 // 3. In local development without env var, use http://localhost:8000/api/v1.
 const envApiUrl = import.meta.env.VITE_API_BASE_URL;
 
+// The production site is a single combined Vercel deployment where
+// /api/* is routed internally to the FastAPI backend (see root vercel.json).
+// A relative path avoids cross-origin/CORS/auth issues entirely.
 let API_BASE_URL = import.meta.env.PROD
-  ? 'https://backend-psi-lovat-86.vercel.app/api/v1'
+  ? '/api/v1'
   : 'http://localhost:8000/api/v1';
 
 if (envApiUrl) {

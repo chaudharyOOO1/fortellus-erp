@@ -1,9 +1,13 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.api.deps import get_current_active_user, require_admin
+from app.api.permissions import all_permission_keys, effective_permissions
 from app.core.database import get_db
+from app.core.security import get_password_hash
 from app.crud.crud_user import user as crud_user
 from app.models.enums import UserRole
 from app.models.user import User
@@ -11,6 +15,7 @@ from app.schemas.user import UserCreate, UserUpdate, UserResponse
 
 router = APIRouter()
 
+ADMIN_ROLES = {UserRole.OWNER, UserRole.SUPER_ADMIN, UserRole.ADMIN}
 
 @router.get("/", response_model=List[UserResponse])
 def read_users(
@@ -20,115 +25,97 @@ def read_users(
     role: Optional[UserRole] = None,
     current_user: User = Depends(require_admin),
 ) -> List[UserResponse]:
-    """Retrieve users with optional role filtering (Admin only)."""
+    query = db.query(crud_user.model)
     if role:
-        users = (
-            db.query(crud_user.model)
-            .filter(crud_user.model.role == role)
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
-        return users
-    return crud_user.get_multi(db, skip=skip, limit=limit)
-
+        query = query.filter(crud_user.model.role == role)
+    return query.offset(skip).limit(limit).all()
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(
-    *,
-    db: Session = Depends(get_db),
-    user_in: UserCreate,
-    current_user: User = Depends(require_admin),
-) -> UserResponse:
-    """Create a new user account (Admin only)."""
-    existing = crud_user.get_by_email(db, email=user_in.email)
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="A user with this email already exists.",
-        )
+def create_user(*, db: Session = Depends(get_db), user_in: UserCreate, current_user: User = Depends(require_admin)) -> UserResponse:
+    if len(user_in.password) < 12:
+        raise HTTPException(status_code=400, detail="Initial password must be at least 12 characters.")
+    if crud_user.get_by_email(db, email=user_in.email):
+        raise HTTPException(status_code=400, detail="A user with this email already exists.")
     return crud_user.create(db, obj_in=user_in)
 
-
 @router.get("/{user_id}", response_model=UserResponse)
-def read_user(
-    *,
-    db: Session = Depends(get_db),
-    user_id: int,
-    current_user: User = Depends(get_current_active_user),
-) -> UserResponse:
-    """Get a specific user by ID. Users can view their own profile; Admins can view any."""
-    if current_user.role != UserRole.ADMIN and not current_user.is_superuser:
-        if current_user.id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access forbidden: you can only view your own user profile.",
-            )
-
+def read_user(*, db: Session = Depends(get_db), user_id: int, current_user: User = Depends(get_current_active_user)) -> UserResponse:
+    if not (current_user.is_superuser or current_user.role in ADMIN_ROLES) and current_user.id != user_id:
+        raise HTTPException(status_code=403, detail="Access forbidden.")
     db_user = crud_user.get(db, id=user_id)
     if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
+        raise HTTPException(status_code=404, detail="User not found.")
     return db_user
 
-
 @router.put("/{user_id}", response_model=UserResponse)
-def update_user(
-    *,
-    db: Session = Depends(get_db),
-    user_id: int,
-    user_in: UserUpdate,
-    current_user: User = Depends(get_current_active_user),
-) -> UserResponse:
-    """Update a user. Self-update permitted (excluding role promotion); full update for Admin."""
-    is_admin = current_user.is_superuser or current_user.role == UserRole.ADMIN
-    if not is_admin and current_user.id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden: you cannot update other user profiles.",
-        )
-
+def update_user(*, db: Session = Depends(get_db), user_id: int, user_in: UserUpdate, current_user: User = Depends(require_admin)) -> UserResponse:
     db_user = crud_user.get(db, id=user_id)
     if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
-
+        raise HTTPException(status_code=404, detail="User not found.")
     update_dict = user_in.model_dump(exclude_unset=True)
-
-    # Non-admins cannot alter their role or active status
-    if not is_admin:
-        if "role" in update_dict:
-            del update_dict["role"]
-        if "is_active" in update_dict:
-            del update_dict["is_active"]
-
-    if "email" in update_dict and update_dict["email"] != db_user.email:
-        existing = crud_user.get_by_email(db, email=update_dict["email"])
-        if existing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered to another user.",
-            )
-
+    if "password" in update_dict and update_dict["password"] and len(update_dict["password"]) < 12:
+        raise HTTPException(status_code=400, detail="Password must be at least 12 characters.")
+    if "role" in update_dict and update_dict["role"] in ADMIN_ROLES and not (current_user.is_superuser or current_user.role in ADMIN_ROLES):
+        raise HTTPException(status_code=403, detail="Administrator clearance is required.")
+    if "is_active" in update_dict and update_dict["is_active"] is False and db_user.role in ADMIN_ROLES:
+        active_admins = db.query(User).filter(User.is_active.is_(True), User.role.in_(list(ADMIN_ROLES))).count()
+        if active_admins <= 1:
+            raise HTTPException(status_code=400, detail="The last active administrator cannot be disabled.")
+    if "email" in update_dict and update_dict["email"] != db_user.email and crud_user.get_by_email(db, email=update_dict["email"]):
+        raise HTTPException(status_code=400, detail="Email already registered to another user.")
     return crud_user.update(db, db_obj=db_user, obj_in=update_dict)
 
+class ResetPasswordRequest(BaseModel):
+    new_password: str = Field(min_length=12, max_length=72)
 
-@router.delete("/{user_id}", response_model=UserResponse)
-def delete_user(
-    *,
-    db: Session = Depends(get_db),
-    user_id: int,
-    current_user: User = Depends(require_admin),
-) -> UserResponse:
-    """Delete a user (Admin only)."""
+@router.post("/{user_id}/reset-password")
+def reset_password(*, db: Session = Depends(get_db), user_id: int, data: ResetPasswordRequest, current_user: User = Depends(require_admin)) -> dict:
     db_user = crud_user.get(db, id=user_id)
     if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
+        raise HTTPException(status_code=404, detail="User not found.")
+    db_user.hashed_password = get_password_hash(data.new_password)
+    db_user.password_initialized_at = None
+    db.add(db_user)
+    db.commit()
+    return {"status": "success", "message": "Password reset. The user should change it after signing in."}
+
+class PermissionUpdate(BaseModel):
+    permission_key: str
+    allowed: bool
+
+@router.get("/{user_id}/permissions")
+def get_user_permissions(*, db: Session = Depends(get_db), user_id: int, current_user: User = Depends(require_admin)) -> dict:
+    db_user = crud_user.get(db, id=user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    return {"permissions": effective_permissions(db, db_user), "catalog": all_permission_keys()}
+
+@router.put("/{user_id}/permissions")
+def set_user_permission(*, db: Session = Depends(get_db), user_id: int, data: PermissionUpdate, current_user: User = Depends(require_admin)) -> dict:
+    if data.permission_key not in all_permission_keys():
+        raise HTTPException(status_code=400, detail="Unknown permission.")
+    db_user = crud_user.get(db, id=user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    db.execute(
+        """
+        insert into public.user_permissions(user_id, permission_key, allowed, updated_at)
+        values (:user_id, :permission_key, :allowed, now())
+        on conflict (user_id, permission_key)
+        do update set allowed=excluded.allowed, updated_at=now()
+        """,
+        {"user_id": user_id, "permission_key": data.permission_key, "allowed": data.allowed},
+    )
+    db.commit()
+    return {"status": "success", "permission_key": data.permission_key, "allowed": data.allowed}
+
+@router.delete("/{user_id}", response_model=UserResponse)
+def delete_user(*, db: Session = Depends(get_db), user_id: int, current_user: User = Depends(require_admin)) -> UserResponse:
+    db_user = crud_user.get(db, id=user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    if db_user.role in ADMIN_ROLES:
+        active_admins = db.query(User).filter(User.is_active.is_(True), User.role.in_(list(ADMIN_ROLES))).count()
+        if active_admins <= 1:
+            raise HTTPException(status_code=400, detail="The last active administrator cannot be deleted.")
     return crud_user.remove(db, id=user_id)

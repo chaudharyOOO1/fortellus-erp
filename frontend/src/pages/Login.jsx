@@ -12,6 +12,15 @@ export default function Login() {
   const { login, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  async function handlePersonaLogin(persona) {
+    setError('');
+    setEmail(persona.email);
+    setPassword(persona.personaPassword);
+    const result = await login(persona.email, persona.personaPassword);
+    if (result.success) navigate('/dashboard', { replace: true });
+    else setError(result.error || 'Persona login failed.');
+  }
+
   useEffect(() => {
     if (isAuthenticated) navigate('/dashboard', { replace: true });
   }, [isAuthenticated, navigate]);
@@ -45,7 +54,7 @@ export default function Login() {
         <div className="w-full max-w-[440px]">
           <div className="lg:hidden flex items-center gap-3 mb-12"><div className="h-10 w-10 rounded-xl bg-slate-950 flex items-center justify-center"><ShieldCheck className="h-5 w-5 text-white" /></div><div><div className="font-bold tracking-tight">FORTELLUS</div><div className="text-[9px] tracking-[.25em] text-slate-400">ENTERPRISE ERP</div></div></div>
           <div className="mb-9"><p className="text-xs font-semibold uppercase tracking-[.18em] text-slate-500">Fortellus enterprise portal</p><h2 className="mt-3 text-3xl font-semibold tracking-tight">Welcome back</h2><p className="mt-2 text-sm text-slate-500">Sign in to continue to your Fortellus workspace.</p></div>
-          <div className="mb-7"><p className="mb-3 text-xs font-semibold uppercase tracking-[.16em] text-slate-400">Quick persona login</p><div className="grid grid-cols-2 sm:grid-cols-3 gap-2">{INITIAL_USERS.filter(u => ['OWNER','HR','OPERATIONS','ACCOUNTS','CLIENT','STAFF'].includes(u.role) && u.personaPassword).map((persona) => (<button key={persona.role} type="button" onClick={() => { setEmail(persona.email); setPassword(persona.personaPassword); }} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left hover:border-slate-400 hover:bg-white transition-colors"><span className="block text-xs font-semibold text-slate-800">{persona.role === 'STAFF' ? 'Employee' : persona.role}</span><span className="block text-[10px] text-slate-400 mt-0.5 truncate">{persona.email}</span></button>))}</div></div>
+          <div className="mb-7"><p className="mb-3 text-xs font-semibold uppercase tracking-[.16em] text-slate-400">Quick persona login</p><div className="grid grid-cols-2 sm:grid-cols-3 gap-2">{INITIAL_USERS.filter(u => ['OWNER','HR','OPERATIONS','ACCOUNTS','CLIENT','STAFF'].includes(u.role) && u.personaPassword).map((persona) => (<button key={persona.role} type="button" onClick={() => handlePersonaLogin(persona)} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left hover:border-slate-400 hover:bg-white transition-colors"><span className="block text-xs font-semibold text-slate-800">{persona.role === 'STAFF' ? 'Employee' : persona.role}</span><span className="block text-[10px] text-slate-400 mt-0.5 truncate">{persona.email}</span></button>))}</div></div>
           {error && <div role="alert" className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div><label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">Email address</label><div className="relative"><Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input id="email" type="email" autoComplete="username" required value={email} onChange={e => setEmail(e.target.value)} className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-10 pr-4 text-sm outline-none transition focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5" placeholder="owner@fortellus.com" /></div></div>

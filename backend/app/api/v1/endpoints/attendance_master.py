@@ -21,6 +21,18 @@ def list_attendance(db: Session = Depends(get_db), current_user=Depends(require_
 
 
 
+@router.get("/my-rosters")
+def my_rosters(db: Session = Depends(get_db), current_user=Depends(require_admin_or_staff)):
+    q = """select r.*,s.site_name,s.site_code,s.latitude,s.longitude,
+      coalesce(s.geofence_radius_meters,100) geofence_radius_meters,
+      a.id attendance_id,a.check_in_time,a.check_out_time,a.verification_status
+      from shift_rosters r join guard_profiles g on g.id=r.guard_id
+      join sites s on s.id=r.site_id left join attendance a on a.roster_id=r.id
+      where g.user_id=:user_id and r.date >= current_date and r.status='SCHEDULED'
+      order by r.date asc,r.id asc limit 7"""
+    return [dict(r) for r in db.execute(text(q), {"user_id": current_user.id}).mappings().all()]
+
+
 @router.post("/punch")
 def punch_attendance(payload: dict, db: Session = Depends(get_db), current_user=Depends(require_admin_or_staff)):
     for key in ("roster_id", "latitude", "longitude", "device_id"):

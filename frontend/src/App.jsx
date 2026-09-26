@@ -40,20 +40,20 @@ function App() {
   return <Router><AuthProvider><Routes>
     <Route path="/login" element={<Login />} />
     <Route path="/setup-admin" element={<AdminSetup />} />
-    <Route path="/erp" element={<Protected><ERPModules /></Protected>} />
-    <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
-    <Route path="/employees" element={<Protected allowedRoles={HR_ROLES}><Employees /></Protected>} />
-    <Route path="/personnel" element={<Protected allowedRoles={HR_ROLES}><Personnel /></Protected>} />
-    <Route path="/clients" element={<Protected allowedRoles={STAFF_ROLES}><Clients /></Protected>} />
-    <Route path="/sites" element={<Protected allowedRoles={STAFF_ROLES}><Sites /></Protected>} />
-    <Route path="/rosters" element={<Protected allowedRoles={STAFF_ROLES}><Rosters /></Protected>} />
-    <Route path="/attendance" element={<Protected allowedRoles={ATTENDANCE_ROLES}><Attendance /></Protected>} />
-    <Route path="/billing" element={<Protected allowedRoles={[...ACCOUNTS_ROLES, 'CLIENT']}><InvoicesView /></Protected>} />
-    <Route path="/payroll" element={<Protected allowedRoles={[...ACCOUNTS_ROLES, 'HR']}><PayrollView /></Protected>} />
-    <Route path="/accounts" element={<Protected allowedRoles={ACCOUNTS_ROLES}><ControlCenter type="accounts" /></Protected>} />
-    <Route path="/compliance" element={<Protected allowedRoles={[...HR_ROLES, 'ACCOUNTS']}><ControlCenter type="compliance" /></Protected>} />
-    <Route path="/risks" element={<Protected allowedRoles={[...INTERNAL, 'HR', 'OPERATIONS', 'ACCOUNTS']}><ControlCenter type="risks" /></Protected>} />
-    <Route path="/owner-executive" element={<Protected allowedRoles={['OWNER']}><OwnerExecutiveView /></Protected>} />
+    <Route path="/erp" element={<Protected permission="dashboard.view"><ERPModules /></Protected>} />
+    <Route path="/dashboard" element={<Protected permission="dashboard.view"><Dashboard /></Protected>} />
+    <Route path="/employees" element={<Protected permission="employees.view" allowedRoles={HR_ROLES}><Employees /></Protected>} />
+    <Route path="/personnel" element={<Protected permission="employees.view" allowedRoles={HR_ROLES}><Personnel /></Protected>} />
+    <Route path="/clients" element={<Protected permission="clients.view" allowedRoles={STAFF_ROLES}><Clients /></Protected>} />
+    <Route path="/sites" element={<Protected permission="sites.view" allowedRoles={STAFF_ROLES}><Sites /></Protected>} />
+    <Route path="/rosters" element={<Protected permission="rosters.view" allowedRoles={STAFF_ROLES}><Rosters /></Protected>} />
+    <Route path="/attendance" element={<Protected permission="attendance.view" allowedRoles={ATTENDANCE_ROLES}><Attendance /></Protected>} />
+    <Route path="/billing" element={<Protected permission="billing.view" allowedRoles={[...ACCOUNTS_ROLES, 'CLIENT']}><InvoicesView /></Protected>} />
+    <Route path="/payroll" element={<Protected permission="payroll.view" allowedRoles={[...ACCOUNTS_ROLES, 'HR']}><PayrollView /></Protected>} />
+    <Route path="/accounts" element={<Protected permission="finance.view" allowedRoles={ACCOUNTS_ROLES}><ControlCenter type="accounts" /></Protected>} />
+    <Route path="/compliance" element={<Protected permission="compliance.view" allowedRoles={[...HR_ROLES, 'ACCOUNTS']}><ControlCenter type="compliance" /></Protected>} />
+    <Route path="/risks" element={<Protected permission="risks.view" allowedRoles={[...INTERNAL, 'HR', 'OPERATIONS', 'ACCOUNTS']}><ControlCenter type="risks" /></Protected>} />
+    <Route path="/owner-executive" element={<Protected permission="owner.view" allowedRoles={['OWNER']}><OwnerExecutiveView /></Protected>} />
     <Route path="/users" element={<Protected permission="user_management.view"><UserManagement /></Protected>} />
     <Route path="/account" element={<Protected><AccountSettings /></Protected>} />
     <Route path="/" element={<RootRedirect />} /><Route path="*" element={<RootRedirect />} />

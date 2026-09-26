@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth,users,erp,employees,client_master,site_master,control_center,roster_master,attendance_master,erp_controls,accounts_master,mobile_sync,recruitment,staff,payroll,owner
+from app.api.v1.endpoints import auth,users,erp,employees,client_master,site_master,control_center,roster_master,attendance_master,erp_controls,accounts_master,mobile_sync,recruitment,staff,contract_master,payroll,owner
 
 api_router=APIRouter()
 api_router.include_router(auth.router,prefix="/auth",tags=["Authentication"])

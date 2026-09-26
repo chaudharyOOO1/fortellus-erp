@@ -130,3 +130,15 @@ Current status: **IMPLEMENTED IN GITHUB**
 
 ## GitHub-first build policy
 All remaining production verification and deployment actions are intentionally deferred until the complete implementation is built and CI-verified on GitHub.
+
+
+## GitHub Validation Pass — 2026-09-26
+- [x] Added repository CI workflow at `.github/workflows/erp-ci.yml` for backend dependency install, Python compilation, regression tests, FastAPI import validation, frontend lint and production build.
+- [x] Added geofence regression tests under `backend/tests/test_geofence.py`.
+- [x] Added Phase 5 compatibility migration for invoice GST split fields, site branch region and finance expense ledger.
+- [x] Corrected attendance billing to use the existing invoice schema and site/client region fields.
+- [x] Corrected Owner P&L to use the new finance expense ledger.
+- [x] Confirmed `main` is the repository branch.
+- [ ] GitHub-hosted CI result still needs to be observed; the connected GitHub workflow-run endpoint only exposes pull-request-triggered runs.
+- [ ] Live Supabase Phase 5 migration application and authenticated Phase 4-6 checkpoint testing remain after repository CI.
+- [ ] Vercel deployment remains intentionally deferred.

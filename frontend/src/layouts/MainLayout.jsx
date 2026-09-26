@@ -113,7 +113,9 @@ export default function MainLayout({ children, onQuickAction = null }) {
     ];
   } else if (role === 'STAFF') {
     navItems = [
-      { icon: LayoutDashboard, label: 'Guard Terminal', path: '/dashboard' },
+      { icon: LayoutDashboard, label: 'Employee Dashboard', path: '/dashboard' },
+      { icon: Users, label: 'Client Accounts', path: '/clients' },
+      { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },
       { icon: Calendar, label: 'My Duty Schedule', path: '/rosters' },
       { icon: ClipboardList, label: 'My Attendance & OT', path: '/attendance' },
     ];
@@ -214,7 +216,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
                     { role: 'OPERATIONS', label: 'Operations Manager' },
                     { role: 'ACCOUNTS', label: 'Accounts Manager' },
                     { role: 'CLIENT', label: 'Client Portal' },
-                    { role: 'STAFF', label: 'Field Staff' },
+                    { role: 'STAFF', label: 'Employee' },
                   ].map(({ role: r, label }) => (
                     <button
                       key={r}

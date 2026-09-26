@@ -51,7 +51,7 @@ Phase 2 verification:
 
 ## STOP & HANDOVER CHECKPOINT 2
 
-Current checkpoint status: **PHASE 3 IMPLEMENTATION IN PROGRESS**
+Current checkpoint status: **PHASE 3 COMPLETE IN REPOSITORY; LIVE DEPLOYMENT CHECKPOINT DEFERRED**
 
 Phase 3 implementation completed in repository:
 1. [x] 15-character GSTIN validation and branch-region enforcement.
@@ -93,3 +93,40 @@ STOP & HANDOVER CHECKPOINT 3 remains pending until the production build is READY
 ## Deployment trigger
 - [x] Phase 3 source consolidated on main; this commit triggers the consolidated Vercel production build.
 - [x] Manual redeploy trigger requested after verifying the previous production deployment remained on commit d62c84ce.
+
+
+## Phase 4 — GPS Geofenced Attendance & Field Verification
+Current status: **IMPLEMENTED IN GITHUB**
+- [x] Haversine geofence helper with configurable site radius, default 100m.
+- [x] Server-side GPS validation for staff check-in/check-out.
+- [x] Device fingerprint hashing and roster device-binding enforcement.
+- [x] Verified check-in/check-out coordinates and distance persisted.
+- [x] Regular hours and overtime calculated at checkout.
+- [x] Staff assigned-roster endpoint added for the field terminal.
+- [x] Dashboard field punch wired to browser geolocation.
+- [x] Attendance UI displays GPS verification and distance.
+- [ ] Live authenticated GPS checkpoint test.
+
+## Phase 5 — Automated Statutory Payroll & Tax Invoicing
+Current status: **IMPLEMENTED IN GITHUB**
+- [x] Payroll run lifecycle DRAFT/CALCULATED/APPROVED/DISBURSED schema.
+- [x] Attendance-driven salary calculation.
+- [x] Basic/HRA/allowances/OT/night allowance.
+- [x] PF 12%, ESIC 0.75%, LWF and Uniform EMI deductions.
+- [x] Salary Hold Engine with mandatory audit note.
+- [x] PDF payslip endpoint and frontend payroll workspace.
+- [x] Verified-attendance billing endpoint with CGST/SGST vs IGST calculation.
+- [x] Payroll migration and reportlab runtime dependency added.
+- [ ] Live authenticated payroll/invoice checkpoint test.
+
+## Phase 6 — Owner Executive Command Center
+Current status: **IMPLEMENTED IN GITHUB**
+- [x] OWNER-only executive summary API.
+- [x] Revenue, expenses, payroll, statutory liabilities, net profit and net margin.
+- [x] Client-level dynamic P&L view.
+- [x] Financial, compliance and operational risk-radar foundation.
+- [x] Owner Executive UI activated.
+- [ ] Live authenticated OWNER checkpoint test.
+
+## GitHub-first build policy
+All remaining production verification and deployment actions are intentionally deferred until the complete implementation is built and CI-verified on GitHub.

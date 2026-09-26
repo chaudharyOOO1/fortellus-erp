@@ -36,7 +36,7 @@ Active roadmap: Master Implementation Plan v2.0
 
 ## STOP & HANDOVER CHECKPOINT 1
 
-Current checkpoint status: **COMPLETED — PHASE 2 IMPLEMENTED AND CI VERIFIED**
+Current checkpoint status: **COMPLETED — PHASE 2 IMPLEMENTED / LIVE SCHEMA DEPLOYED**
 
 Phase 2 verification:
 1. [x] Recruitment candidate pipeline: APPLIED → VERIFIED → ONBOARDED.
@@ -47,18 +47,36 @@ Phase 2 verification:
 6. [x] Compliance runner re-evaluates existing staff and synchronizes employee status/reason.
 7. [x] Personnel UI provides staff, recruitment and compliance views with vertical filtering.
 8. [x] Phase 2 frontend/backend CI passed on commits 986a74f, 4ee4c0b and 7972ceb.
-9. [ ] Live production Supabase checkpoint still requires database/API execution verification.
+9. [x] Live Phase 2 Supabase migration applied to production project `zvogktuqdcpjsfargewg`; protected API routes and health/docs endpoints verified.
 
 ## STOP & HANDOVER CHECKPOINT 2
 
-Current checkpoint status: **CODE COMPLETE / CI VERIFIED; LIVE DATA TEST PENDING**
+Current checkpoint status: **PHASE 3 IMPLEMENTATION IN PROGRESS**
 
-Next phase:
-1. Client Master GSTIN validation and branch mapping.
-2. Dynamic contracts and renewal alerts.
-3. Site-specific multi-tier rates.
-4. Deployment roster collision prevention and BENCH-lock prevention.
-5. Shortfall Index and replacement suggestions.
+Phase 3 implementation completed in repository:
+1. [x] 15-character GSTIN validation and branch-region enforcement.
+2. [x] Client contract records with 30/60-day renewal classification.
+3. [x] Site-specific multi-tier rate-card schema and APIs.
+4. [x] Site latitude/longitude/geofence-radius fields for Phase 4 readiness.
+5. [x] Roster BENCH-lock prevention.
+6. [x] Same-date guard collision prevention across sites.
+7. [x] Shortfall Index calculation and replacement suggestions.
+8. [x] Client, site and roster UI updated for the Phase 3 controls.
+9. [x] Phase 3 migration applied to production Supabase.
+10. [ ] Final CI/Vercel production rollout and authenticated end-to-end checkpoint verification.
+
+STOP & HANDOVER CHECKPOINT 3 remains pending until the production build is READY and the four PDF verification scenarios are executed.
+
+## Phase 3 modified files
+- `backend/app/api/v1/api.py` — registered contract/rate APIs.
+- `backend/app/api/v1/endpoints/client_master.py` — GSTIN enforcement and contract renewal metadata.
+- `backend/app/api/v1/endpoints/contract_master.py` — dynamic contract and site rate-card APIs.
+- `backend/app/api/v1/endpoints/site_master.py` — GPS/geofence-ready site master.
+- `backend/app/api/v1/endpoints/roster_master.py` — BENCH-lock prevention, collision prevention and shortfall analysis.
+- `frontend/src/pages/Clients.jsx` — GSTIN and contract renewal UI.
+- `frontend/src/pages/Sites.jsx` — GPS/geofence UI.
+- `frontend/src/pages/Rosters.jsx` — shortfall alerts and deployment safeguards.
+- `supabase/migrations/20260926173000_phase3_contract_rates_roster.sql` — contracts, rate cards and site geofence schema.
 
 ## Phase 2 modified files
 - `backend/app/api/v1/endpoints/recruitment.py` — recruitment pipeline, onboarding, KYC, Aadhaar and compliance lock enforcement (127 lines).

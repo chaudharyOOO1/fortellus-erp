@@ -19,3 +19,16 @@
 - Corrected Personnel compliance filtering and marked required onboarding KYC fields in the UI.
 - CI passed for the Phase 2 enforcement/UI commits.
 - Phase 2 STOP & HANDOVER CHECKPOINT 2 is code-complete and CI-verified; live Supabase/API execution remains the final verification item before Phase 3.
+
+
+## Phase 3 — 2026-09-26
+- Started Phase 3 directly from the Master Implementation Plan v2.0.
+- Added production schema for client contracts, site-specific rate cards, and site GPS/geofence fields.
+- Added server-side GSTIN validation and branch-region validation to Client Master.
+- Added contract renewal classification: NORMAL, EXPIRING_60, EXPIRING_30 and EXPIRED.
+- Added site rate-card APIs for SECURITY, HOUSEKEEPING and NURSING categories.
+- Added roster enforcement for BENCH-locked staff and same-date cross-site shift collisions.
+- Added Shortfall Index analysis with vacancy counts and available replacement suggestions.
+- Updated Client, Site and Roster UI to expose the Phase 3 controls.
+- Applied the Phase 3 database migration to production Supabase.
+- Final Vercel/CI rollout is still pending because the latest automated Vercel checks hit the account build-rate limit; Phase 3 is not yet marked as handed over.

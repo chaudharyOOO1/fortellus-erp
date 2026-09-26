@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth,users,erp,employees,client_master,site_master,control_center,roster_master,attendance_master,erp_controls,accounts_master,mobile_sync,recruitment,staff
+from app.api.v1.endpoints import auth,users,erp,employees,client_master,site_master,control_center,roster_master,attendance_master,erp_controls,accounts_master,mobile_sync,recruitment,staff,payroll,owner
 
 api_router=APIRouter()
 api_router.include_router(auth.router,prefix="/auth",tags=["Authentication"])
@@ -17,3 +17,5 @@ api_router.include_router(attendance_master.router,prefix="/erp/attendance",tags
 api_router.include_router(erp_controls.router,prefix="/erp",tags=["ERP Compliance & Controls"])
 api_router.include_router(accounts_master.router,prefix="/erp",tags=["ERP Accounts Workflows"])
 api_router.include_router(mobile_sync.router,prefix="/erp",tags=["Mobile ERP Sync"])
+api_router.include_router(payroll.router,prefix="/erp",tags=["Payroll & Billing Automation"])
+api_router.include_router(owner.router,prefix="/owner",tags=["Owner Executive Command Center"])

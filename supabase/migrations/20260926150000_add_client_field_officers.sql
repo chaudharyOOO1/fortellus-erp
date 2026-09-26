@@ -9,3 +9,6 @@ create table if not exists public.client_field_officers (
 alter table public.client_field_officers enable row level security;
 create index if not exists idx_client_field_officers_client on public.client_field_officers(client_id);
 create index if not exists idx_client_field_officers_employee on public.client_field_officers(employee_id);
+
+drop policy if exists "deny_client_field_officer_api" on public.client_field_officers;
+create policy "deny_client_field_officer_api" on public.client_field_officers for all to anon, authenticated using (false) with check (false);

@@ -12,11 +12,15 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Set all CORS enabled origins
+# Set all CORS enabled origins. In addition to the explicit list (mainly for
+# localhost), allow any current or future Vercel deployment URL for this
+# team/project via regex, so new preview/production aliases don't require a
+# code change + redeploy every time Vercel generates one.
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.BACKEND_CORS_ORIGINS,
+        allow_origin_regex=r"^https://([a-zA-Z0-9-]+-fortellus\.vercel\.app|fortellus-erp\.vercel\.app)$",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

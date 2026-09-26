@@ -161,3 +161,7 @@ main > .max-w-7xl {
     width: 240px !important;
   }
 }
+
+/* Northlane ERP layout safeguards */
+body { margin: 0; }
+#root { min-height: 100vh; }

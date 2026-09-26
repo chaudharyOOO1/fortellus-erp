@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [clients, setClients] = useState([]);
   const [sites, setSites] = useState([]);
   const [rosters, setRosters] = useState([]);
+  const [staffRosters, setStaffRosters] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [invoices, setInvoices] = useState([]);
 
@@ -66,8 +67,9 @@ export default function Dashboard() {
       api.get('/erp/sites'),
       api.get('/erp/rosters'),
       api.get('/erp/attendance'),
+      api.get('/erp/attendance/my-rosters'),
       api.get('/erp/accounts'),
-    ]).then(([eRes, cRes, sRes, rRes, aRes, acRes]) => {
+    ]).then(([eRes, cRes, sRes, rRes, aRes, myRosterRes, acRes]) => {
       if (!mounted) return;
       if (eRes.status === 'fulfilled') {
         setGuards((eRes.value.data || []).map((e) => ({
@@ -81,6 +83,11 @@ export default function Dashboard() {
       if (cRes.status === 'fulfilled') setClients(cRes.value.data || []);
       if (sRes.status === 'fulfilled') setSites(sRes.value.data || []);
       if (rRes.status === 'fulfilled') setRosters(rRes.value.data || []);
+      if (myRosterRes.status === 'fulfilled') {
+        const mine = myRosterRes.value.data || [];
+        setStaffRosters(mine);
+        setPunchedIn(mine.some((r) => r.check_in_time && !r.check_out_time));
+      }
       if (aRes.status === 'fulfilled') {
         setAttendance((aRes.value.data || []).map((a) => ({
           ...a,
@@ -123,12 +130,26 @@ export default function Dashboard() {
     setInvoices([newInv, ...invoices]);
   }
 
-  function handleTogglePunch() {
-    const nextState = !punchedIn;
-    setPunchedIn(nextState);
-    const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setPunchToast(nextState ? `Checked In successfully at ${nowStr}` : `Checked Out successfully at ${nowStr}`);
-    setTimeout(() => setPunchToast(''), 4000);
+  async function handleTogglePunch() {
+    const roster = staffRosters.find((r) => r.check_in_time && !r.check_out_time) || staffRosters[0];
+    if (!roster) { setPunchToast('No assigned roster is available for GPS attendance.'); return; }
+    if (!navigator.geolocation) { setPunchToast('This browser does not support GPS geolocation.'); return; }
+    const getPosition = () => new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }));
+    try {
+      const pos = await getPosition();
+      let deviceKey = localStorage.getItem('northlane_device_id');
+      if (!deviceKey) { deviceKey = crypto.randomUUID(); localStorage.setItem('northlane_device_id', deviceKey); }
+      const result = await api.post('/erp/attendance/punch', { roster_id: roster.id, latitude: pos.coords.latitude, longitude: pos.coords.longitude, device_id: deviceKey });
+      const checkedIn = result.data?.action === 'CHECK_IN';
+      setPunchedIn(checkedIn);
+      setPunchToast(checkedIn ? 'GPS check-in verified at '+result.data.distance_m+'m from site.' : 'GPS check-out verified. OT: '+(result.data.overtime_hours || 0)+'h.');
+      const mine = await api.get('/erp/attendance/my-rosters');
+      setStaffRosters(mine.data || []);
+      setTimeout(() => setPunchToast(''), 5000);
+    } catch (e) {
+      setPunchToast(e.response?.data?.detail || 'GPS attendance punch failed. Stay within the site geofence and retry.');
+      setTimeout(() => setPunchToast(''), 5000);
+    }
   }
 
   /* ------------------------------------------------------------- */
@@ -623,7 +644,7 @@ export default function Dashboard() {
   /* 3. STAFF / GUARD DASHBOARD VIEW                               */
   /* ------------------------------------------------------------- */
   function renderStaffView() {
-    const myShifts = rosters.slice(0, 4);
+    const myShifts = staffRosters.length ? staffRosters.slice(0, 4) : rosters.slice(0, 4);
     const myAttendanceLogs = attendance.slice(0, 4);
 
     return (

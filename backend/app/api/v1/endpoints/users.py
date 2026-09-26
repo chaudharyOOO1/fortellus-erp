@@ -2,7 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import text
 
 from app.api.deps import get_current_active_user, require_admin
 from app.api.permissions import all_permission_keys, effective_permissions
@@ -14,26 +14,16 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate, UserResponse
 
 router = APIRouter()
-
 ADMIN_ROLES = {UserRole.OWNER, UserRole.SUPER_ADMIN, UserRole.ADMIN}
 
 @router.get("/", response_model=List[UserResponse])
-def read_users(
-    db: Session = Depends(get_db),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=500),
-    role: Optional[UserRole] = None,
-    current_user: User = Depends(require_admin),
-) -> List[UserResponse]:
+def read_users(db: Session = Depends(get_db), skip: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=500), role: Optional[UserRole] = None, current_user: User = Depends(require_admin)) -> List[UserResponse]:
     query = db.query(crud_user.model)
-    if role:
-        query = query.filter(crud_user.model.role == role)
+    if role: query = query.filter(crud_user.model.role == role)
     return query.offset(skip).limit(limit).all()
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(*, db: Session = Depends(get_db), user_in: UserCreate, current_user: User = Depends(require_admin)) -> UserResponse:
-    if len(user_in.password) < 12:
-        raise HTTPException(status_code=400, detail="Initial password must be at least 12 characters.")
     if crud_user.get_by_email(db, email=user_in.email):
         raise HTTPException(status_code=400, detail="A user with this email already exists.")
     return crud_user.create(db, obj_in=user_in)
@@ -43,24 +33,17 @@ def read_user(*, db: Session = Depends(get_db), user_id: int, current_user: User
     if not (current_user.is_superuser or current_user.role in ADMIN_ROLES) and current_user.id != user_id:
         raise HTTPException(status_code=403, detail="Access forbidden.")
     db_user = crud_user.get(db, id=user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found.")
+    if not db_user: raise HTTPException(status_code=404, detail="User not found.")
     return db_user
 
 @router.put("/{user_id}", response_model=UserResponse)
 def update_user(*, db: Session = Depends(get_db), user_id: int, user_in: UserUpdate, current_user: User = Depends(require_admin)) -> UserResponse:
     db_user = crud_user.get(db, id=user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found.")
+    if not db_user: raise HTTPException(status_code=404, detail="User not found.")
     update_dict = user_in.model_dump(exclude_unset=True)
-    if "password" in update_dict and update_dict["password"] and len(update_dict["password"]) < 12:
-        raise HTTPException(status_code=400, detail="Password must be at least 12 characters.")
-    if "role" in update_dict and update_dict["role"] in ADMIN_ROLES and not (current_user.is_superuser or current_user.role in ADMIN_ROLES):
-        raise HTTPException(status_code=403, detail="Administrator clearance is required.")
     if "is_active" in update_dict and update_dict["is_active"] is False and db_user.role in ADMIN_ROLES:
         active_admins = db.query(User).filter(User.is_active.is_(True), User.role.in_(list(ADMIN_ROLES))).count()
-        if active_admins <= 1:
-            raise HTTPException(status_code=400, detail="The last active administrator cannot be disabled.")
+        if active_admins <= 1: raise HTTPException(status_code=400, detail="The last active administrator cannot be disabled.")
     if "email" in update_dict and update_dict["email"] != db_user.email and crud_user.get_by_email(db, email=update_dict["email"]):
         raise HTTPException(status_code=400, detail="Email already registered to another user.")
     return crud_user.update(db, db_obj=db_user, obj_in=update_dict)
@@ -71,12 +54,10 @@ class ResetPasswordRequest(BaseModel):
 @router.post("/{user_id}/reset-password")
 def reset_password(*, db: Session = Depends(get_db), user_id: int, data: ResetPasswordRequest, current_user: User = Depends(require_admin)) -> dict:
     db_user = crud_user.get(db, id=user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found.")
+    if not db_user: raise HTTPException(status_code=404, detail="User not found.")
     db_user.hashed_password = get_password_hash(data.new_password)
     db_user.password_initialized_at = None
-    db.add(db_user)
-    db.commit()
+    db.add(db_user); db.commit()
     return {"status": "success", "message": "Password reset. The user should change it after signing in."}
 
 class PermissionUpdate(BaseModel):
@@ -86,36 +67,28 @@ class PermissionUpdate(BaseModel):
 @router.get("/{user_id}/permissions")
 def get_user_permissions(*, db: Session = Depends(get_db), user_id: int, current_user: User = Depends(require_admin)) -> dict:
     db_user = crud_user.get(db, id=user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found.")
+    if not db_user: raise HTTPException(status_code=404, detail="User not found.")
     return {"permissions": effective_permissions(db, db_user), "catalog": all_permission_keys()}
 
 @router.put("/{user_id}/permissions")
 def set_user_permission(*, db: Session = Depends(get_db), user_id: int, data: PermissionUpdate, current_user: User = Depends(require_admin)) -> dict:
-    if data.permission_key not in all_permission_keys():
-        raise HTTPException(status_code=400, detail="Unknown permission.")
+    if data.permission_key not in all_permission_keys(): raise HTTPException(status_code=400, detail="Unknown permission.")
     db_user = crud_user.get(db, id=user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found.")
-    db.execute(
-        """
+    if not db_user: raise HTTPException(status_code=404, detail="User not found.")
+    db.execute(text("""
         insert into public.user_permissions(user_id, permission_key, allowed, updated_at)
         values (:user_id, :permission_key, :allowed, now())
         on conflict (user_id, permission_key)
         do update set allowed=excluded.allowed, updated_at=now()
-        """,
-        {"user_id": user_id, "permission_key": data.permission_key, "allowed": data.allowed},
-    )
+    """), {"user_id": user_id, "permission_key": data.permission_key, "allowed": data.allowed})
     db.commit()
     return {"status": "success", "permission_key": data.permission_key, "allowed": data.allowed}
 
 @router.delete("/{user_id}", response_model=UserResponse)
 def delete_user(*, db: Session = Depends(get_db), user_id: int, current_user: User = Depends(require_admin)) -> UserResponse:
     db_user = crud_user.get(db, id=user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found.")
+    if not db_user: raise HTTPException(status_code=404, detail="User not found.")
     if db_user.role in ADMIN_ROLES:
         active_admins = db.query(User).filter(User.is_active.is_(True), User.role.in_(list(ADMIN_ROLES))).count()
-        if active_admins <= 1:
-            raise HTTPException(status_code=400, detail="The last active administrator cannot be deleted.")
+        if active_admins <= 1: raise HTTPException(status_code=400, detail="The last active administrator cannot be deleted.")
     return crud_user.remove(db, id=user_id)

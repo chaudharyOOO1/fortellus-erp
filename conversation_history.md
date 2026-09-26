@@ -32,3 +32,12 @@
 - Updated Client, Site and Roster UI to expose the Phase 3 controls.
 - Applied the Phase 3 database migration to production Supabase.
 - Final Vercel/CI rollout is still pending because the latest automated Vercel checks hit the account build-rate limit; Phase 3 is not yet marked as handed over.
+
+
+## 2026-09-26 — GitHub-first full ERP build checkpoint
+- User requested that the complete ERP be built on GitHub first, with Vercel deployment deferred until the repository is complete.
+- Phase 4 implemented: Haversine GPS geofence, device binding hash, verified punch/check-out, OT calculation, staff roster terminal endpoint, dashboard GPS terminal and attendance verification UI.
+- Phase 5 implemented: payroll run/slip/hold schema, attendance-driven PF/ESIC/LWF/Uniform EMI calculation, salary hold workflow, PDF payslip endpoint, verified-attendance invoice generation with GST split.
+- Phase 6 implemented: OWNER-only executive summary API with P&L, net margin and computed risk radar; Owner Executive UI activated.
+- Final GitHub HEAD: 63bc371d5bc769712a6dd08abe2d9b38ca2c1076.
+- Vercel deployment is intentionally not being triggered as part of this GitHub-first build pass.

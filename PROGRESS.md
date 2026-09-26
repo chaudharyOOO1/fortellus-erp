@@ -36,14 +36,35 @@ Active roadmap: Master Implementation Plan v2.0
 
 ## STOP & HANDOVER CHECKPOINT 1
 
-Current checkpoint status: **READY TO HAND OVER TO PHASE 2**
+Current checkpoint status: **COMPLETED — PHASE 2 IMPLEMENTED AND CI VERIFIED**
+
+Phase 2 verification:
+1. [x] Recruitment candidate pipeline: APPLIED → VERIFIED → ONBOARDED.
+2. [x] Unified multi-vertical Staff Profile with SECURITY / HOUSEKEEPING / NURSING.
+3. [x] Mandatory Aadhaar/PAN/Bank Account/IFSC validation; Aadhaar uses Verhoeff checksum.
+4. [x] Gunman arms fields enforced during onboarding.
+5. [x] Missing/expired Police Verification or Medical Fitness creates BENCH LOCK at onboarding.
+6. [x] Compliance runner re-evaluates existing staff and synchronizes employee status/reason.
+7. [x] Personnel UI provides staff, recruitment and compliance views with vertical filtering.
+8. [x] Phase 2 frontend/backend CI passed on commits 986a74f, 4ee4c0b and 7972ceb.
+9. [ ] Live production Supabase checkpoint still requires database/API execution verification.
+
+## STOP & HANDOVER CHECKPOINT 2
+
+Current checkpoint status: **CODE COMPLETE / CI VERIFIED; LIVE DATA TEST PENDING**
 
 Next phase:
-1. Recruitment candidate pipeline: APPLIED → VERIFIED → ONBOARDED.
-2. Unified multi-vertical Staff Profile.
-3. KYC/statutory/arms/uniform fields.
-4. Compliance expiry evaluation and BENCH locking.
-5. Personnel UI with recruitment and compliance tabs.
+1. Client Master GSTIN validation and branch mapping.
+2. Dynamic contracts and renewal alerts.
+3. Site-specific multi-tier rates.
+4. Deployment roster collision prevention and BENCH-lock prevention.
+5. Shortfall Index and replacement suggestions.
+
+## Phase 2 modified files
+- `backend/app/api/v1/endpoints/recruitment.py` — recruitment pipeline, onboarding, KYC, Aadhaar and compliance lock enforcement (127 lines).
+- `backend/app/api/v1/endpoints/staff.py` — compliance evaluation and BENCH synchronization (49 lines).
+- `frontend/src/pages/Personnel.jsx` — Staff Master, recruitment and compliance UI (76 lines).
+- `supabase/migrations/20260926160000_phase2_staff_recruitment.sql` — recruitment/staff schema and RLS (64 lines).
 
 ## Repository audit notes
 - Existing production stack: React/Vite frontend + FastAPI backend + Supabase PostgreSQL.

@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/executive-summary")
 def executive_summary(db: Session = Depends(get_db), current_user=Depends(require_owner)):
     revenue = float(db.execute(text("select coalesce(sum(total_amount),0) from invoices where status <> 'DRAFT'")).scalar() or 0)
-    expenses = float(db.execute(text("select coalesce(sum(amount),0) from expenses")).scalar() or 0)
+    expenses = float(db.execute(text("select coalesce(sum(amount),0) from finance_expenses")).scalar() or 0)
     payroll = float(db.execute(text("select coalesce(sum(net_pay),0) from salary_slips where lifecycle_status in ('CALCULATED','APPROVED','DISBURSED','HELD')")).scalar() or 0)
     statutory = float(db.execute(text("select coalesce(sum(pf+esic+lwf),0) from salary_slips")).scalar() or 0)
     net_profit = revenue - expenses - payroll - statutory
@@ -19,7 +19,7 @@ def executive_summary(db: Session = Depends(get_db), current_user=Depends(requir
 
     clients = db.execute(text("""select c.id,c.company_name,
       coalesce(sum(i.total_amount),0) revenue,
-      coalesce((select sum(e.amount) from expenses e where e.client_id=c.id),0) expenses,
+      coalesce((select sum(e.amount) from finance_expenses e where e.client_id=c.id),0) expenses,
       coalesce((select sum(ss.net_pay) from salary_slips ss join attendance a on a.employee_id=ss.employee_id
         join shift_rosters r on r.id=a.roster_id join sites s on s.id=r.site_id
         where s.client_id=c.id),0) payroll

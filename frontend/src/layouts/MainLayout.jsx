@@ -76,6 +76,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
     navItems = [
       { icon: LayoutDashboard, label: 'Command Center', path: '/erp' },
       { icon: LayoutDashboard, label: 'Operations Dashboard', path: '/dashboard' },
+      { icon: Landmark, label: 'Owner Executive', path: '/owner-executive', ownerOnly: true },
       { icon: Shield, label: 'Employees & HR', path: '/employees' },
       { icon: Users, label: 'Clients', path: '/clients' },
       { icon: MapPin, label: 'Sites & Deployment', path: '/sites' },

@@ -111,7 +111,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
 
 
   return (
-    <div className="min-h-screen bg-[#060913] text-slate-200 flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#f5f7fb] text-slate-700 flex flex-col selection:bg-teal-500/20 selection:text-teal-700">
       <CommandPalette
         isOpen={paletteOpen}
         onClose={() => setPaletteOpen(false)}
@@ -139,9 +139,9 @@ export default function MainLayout({ children, onQuickAction = null }) {
             </div>
             <div>
               <span className="text-base font-extrabold text-white tracking-wider flex items-center gap-1.5">
-                FORTELLUS <span className="text-cyan-400 font-mono text-sm font-semibold">ERP // 2026</span>
+                FORTELLUS <span className="text-teal-700 font-mono text-sm font-semibold">ERP</span>
               </span>
-              <p className="text-[10px] text-slate-500 font-mono hidden sm:block">SECURITY & FACILITY MANAGEMENT</p>
+              <p className="text-[10px] text-slate-500 font-mono hidden sm:block">SECURITY • FACILITY • WORKFORCE MANAGEMENT</p>
             </div>
 
           </div>
@@ -154,7 +154,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
           >
             <div className="flex items-center gap-2">
               <Search className="w-4 h-4 text-cyan-400/80 group-hover:text-cyan-400" />
-              <span>Search telemetry, guards, sites, invoices...</span>
+              <span>Search employees, clients, sites, invoices...</span>
             </div>
             <div className="flex items-center gap-1">
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-400">
@@ -181,7 +181,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
             title={apiConnected ? 'Connected to live FastAPI backend' : 'Running in resilient offline demo mode'}
           >
             <span className={`w-1.5 h-1.5 rounded-full ${apiConnected ? 'bg-emerald-400' : 'bg-cyan-400'} animate-pulse`} />
-            <span>{apiConnected ? 'LIVE API' : 'DEMO MODE'}</span>
+            <span>{apiConnected ? 'LIVE' : 'OFFLINE'}</span>
           </div>
 
           <div className="relative">
@@ -264,7 +264,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-64 cyber-panel border-r border-slate-800/80 hidden md:flex flex-col p-4 space-y-1.5">
           <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono font-bold px-3 mb-2">
-            Operations Matrix
+            ERP Modules
           </p>
 
           {navItems.map((item) => {
@@ -294,7 +294,7 @@ export default function MainLayout({ children, onQuickAction = null }) {
               <div className="flex items-center justify-between text-[11px] font-semibold text-slate-300">
                 <span className="flex items-center gap-1.5">
                   <Zap className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Ops Telemetry</span>
+                  <span>System Health</span>
                 </span>
                 <span className="text-[10px] font-mono text-emerald-400">99.9%</span>
               </div>

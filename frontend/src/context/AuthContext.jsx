@@ -74,12 +74,12 @@ export function AuthProvider({ children }) {
     }
   }
 
-  function switchPersona(role) {
-    const matched = INITIAL_USERS.find(u => u.role === role) || INITIAL_USERS[0];
-    localStorage.setItem('access_token', `demo-${matched.role.toLowerCase()}-token`);
-    localStorage.setItem('user', JSON.stringify(matched));
-    setToken(`demo-${matched.role.toLowerCase()}-token`);
-    setUser(matched);
+  async function switchPersona(role) {
+    const matched = INITIAL_USERS.find(u => u.role === role);
+    if (!matched?.email || !matched?.personaPassword) {
+      return { success: false, error: 'Persona credentials are not configured.' };
+    }
+    return login(matched.email, matched.personaPassword);
   }
 
   function logout() {

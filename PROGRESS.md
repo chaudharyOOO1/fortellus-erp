@@ -142,3 +142,15 @@ All remaining production verification and deployment actions are intentionally d
 - [ ] GitHub-hosted CI result still needs to be observed; the connected GitHub workflow-run endpoint only exposes pull-request-triggered runs.
 - [ ] Live Supabase Phase 5 migration application and authenticated Phase 4-6 checkpoint testing remain after repository CI.
 - [ ] Vercel deployment remains intentionally deferred.
+
+
+## Supabase Phase 4-6 Database Checkpoint — 2026-09-26
+- [x] Applied `phase5_payroll_finance` to production Supabase project `zvogktuqdcpjsfargewg`.
+- [x] Applied `phase5_finance_compatibility` to production Supabase project.
+- [x] Verified GPS attendance columns required by the Phase 4 API exist.
+- [x] Verified payroll_runs, salary_slips and salary_slip_holds exist with RLS.
+- [x] Verified invoice GST split fields and site branch region exist.
+- [x] Verified live baseline contains 2 employees, 0 verified GPS attendance rows, 0 payroll runs, 0 salary slips, 0 posted invoices and 0 expenses; no synthetic test records were inserted.
+- [x] Supabase security advisor reviewed; new payroll tables have deny policies. Existing INFO findings remain on pre-existing `attendances` and `users` RLS policy coverage.
+- [ ] Authenticated end-to-end Phase 4-6 test still requires a valid authorized ERP account/session.
+- [ ] Vercel deployment remains deferred until GitHub validation is complete.

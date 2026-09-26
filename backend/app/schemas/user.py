@@ -26,4 +26,5 @@ class UserResponse(UserBase):
     is_superuser: bool
     created_at: datetime
     updated_at: datetime
+    password_initialized_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)

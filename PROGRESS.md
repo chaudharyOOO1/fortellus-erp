@@ -88,3 +88,7 @@ STOP & HANDOVER CHECKPOINT 3 remains pending until the production build is READY
 - Existing production stack: React/Vite frontend + FastAPI backend + Supabase PostgreSQL.
 - Existing Supabase schema already contains employees, attendance, salary, invoices, GST/ITC, compliance and risk tables.
 - Existing `client_field_officers` table is present and RLS-enabled from the preceding ERP upgrade work.
+
+
+## Deployment trigger
+- [x] Phase 3 source consolidated on main; this commit triggers the consolidated Vercel production build.
